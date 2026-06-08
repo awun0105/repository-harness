@@ -46,7 +46,9 @@ docs/
 
 Use `docs/harness/ONBOARDING_EXISTING_PROJECT.md` when Project Harness is added
 to a repo that already has code. The first task should audit the current repo
-and write baseline docs before treating generated docs as truth.
+and write baseline docs before treating generated docs as truth. When existing
+docs are present, create `docs/onboarding/source-inventory.md` and
+`docs/onboarding/doc-sync-plan.md` before normalizing or replacing them.
 
 ## Freshness Rule
 

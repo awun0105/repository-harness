@@ -42,6 +42,18 @@ templates:
     description: Spec intake worksheet.
     requires_review: true
 
+  source_inventory:
+    template: docs/harness/templates/onboarding/source-inventory.md
+    default_output: docs/onboarding/source-inventory.md
+    description: Existing source material inventory.
+    requires_review: true
+
+  doc_sync_plan:
+    template: docs/harness/templates/onboarding/doc-sync-plan.md
+    default_output: docs/onboarding/doc-sync-plan.md
+    description: Existing documentation normalization plan.
+    requires_review: true
+
   baseline_audit:
     template: docs/harness/templates/onboarding/baseline-audit.md
     default_output: docs/onboarding/baseline-audit.md
