@@ -208,8 +208,12 @@ function Read-CliReleaseTag {
 
 function Get-DefaultCliBaseUrl {
     $tag = $env:HARNESS_CLI_RELEASE_TAG
+    $defaultTag = "harness-cli-v0.1.11-project-harness"
     if ([string]::IsNullOrWhiteSpace($tag)) {
         $tag = Read-CliReleaseTag
+    }
+    if ([string]::IsNullOrWhiteSpace($tag)) {
+        $tag = $defaultTag
     }
     if (![string]::IsNullOrWhiteSpace($tag) -and $tag -ne "latest") {
         return "https://github.com/awun0105/repository-harness/releases/download/$tag"
