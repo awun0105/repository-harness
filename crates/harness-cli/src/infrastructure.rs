@@ -267,9 +267,7 @@ impl SqliteHarnessRepository {
     fn import_decisions(&self, connection: &Connection) -> Result<usize> {
         let decisions_dir = self.repo_root.join("docs/decisions");
         if !decisions_dir.is_dir() {
-            return Err(HarnessInfraError::MissingBrownfieldPath(
-                decisions_dir.display().to_string(),
-            ));
+            return Ok(0);
         }
 
         let mut files = Vec::new();
@@ -1781,6 +1779,51 @@ implemented
             .any(|item| item.title == "Keep installer checksum"
                 && item.status == "implemented"
                 && item.risk.as_deref() == Some("high_risk")));
+    }
+
+    #[test]
+    fn import_brownfield_tolerates_missing_decisions_directory() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let repo_root = temp_dir.path().join("repo");
+        fs::create_dir_all(repo_root.join("docs/harness")).unwrap();
+        fs::create_dir_all(repo_root.join("docs/validation")).unwrap();
+        fs::write(
+            repo_root.join("docs/validation/test-matrix.md"),
+            r#"# Test Matrix
+
+| Story | Contract | Unit | Integration | E2E | Platform | Status | Evidence |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+"#,
+        )
+        .unwrap();
+        fs::write(
+            repo_root.join("docs/harness/HARNESS_BACKLOG.md"),
+            "# Backlog\n",
+        )
+        .unwrap();
+
+        let source_repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .ancestors()
+            .nth(2)
+            .unwrap()
+            .to_path_buf();
+        let repository = SqliteHarnessRepository::new(
+            repo_root,
+            temp_dir.path().join("harness.db"),
+            source_repo_root.join("scripts/schema"),
+        );
+        repository.init().unwrap();
+
+        let result = repository.import_brownfield().unwrap();
+
+        assert_eq!(
+            result,
+            BrownfieldImportResult {
+                stories: 0,
+                decisions: 0,
+                backlog_items: 0,
+            }
+        );
     }
 
     #[test]

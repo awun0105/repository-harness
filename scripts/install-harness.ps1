@@ -208,7 +208,7 @@ function Read-CliReleaseTag {
 
 function Get-DefaultCliBaseUrl {
     $tag = $env:HARNESS_CLI_RELEASE_TAG
-    $defaultTag = "harness-cli-v0.1.11-project-harness"
+    $defaultTag = "harness-cli-v0.1.12-project-harness"
     if ([string]::IsNullOrWhiteSpace($tag)) {
         $tag = Read-CliReleaseTag
     }
