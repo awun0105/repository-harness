@@ -213,6 +213,14 @@ This repo uses Harness. Before work, read:
 - `docs/harness/CONTEXT_RULES.md`
 - `scripts/bin/harness-cli query matrix`
 
+Before creating, normalizing, or syncing documentation, also read:
+
+- `docs/harness/TEMPLATE_REGISTRY.md`
+
+Use registered templates from `docs/harness/templates/`. Do not invent a
+documentation format when a registered template exists. Do not overwrite
+existing project docs during onboarding without a doc sync plan.
+
 Use the Rust Harness CLI at `scripts/bin/harness-cli` as the main operational
 tool. If the CLI binary is unavailable in a checkout, read
 `docs/validation/test-matrix.md` directly and state that the durable matrix
@@ -234,6 +242,9 @@ context-load time. Never wrap them in backticks; that disables the import.
 @AGENTS.md
 
 @docs/harness/FEATURE_INTAKE.md
+
+Before creating, normalizing, or syncing documentation, also read
+`docs/harness/TEMPLATE_REGISTRY.md` and use registered templates.
 
 Also run `scripts/bin/harness-cli query matrix` before starting work.
 If the binary is unavailable, read `docs/validation/test-matrix.md` directly

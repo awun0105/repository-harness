@@ -191,6 +191,8 @@ codebases:
 - The validation matrix supports partial and unknown states.
 - README, docs-suite, requirements, onboarding, story, decision, and validation
   templates live under categorized folders in `docs/harness/templates/`.
+- `docs/harness/TEMPLATE_REGISTRY.md` tells agents which template to use before
+  creating, normalizing, or syncing docs.
 
 ## Product Sources
 

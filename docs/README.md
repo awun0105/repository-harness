@@ -22,6 +22,22 @@ docs/
   harness/       agent operating rules, process docs, and templates
 ```
 
+## Canonical Docs
+
+The canonical project docs are the accepted files under:
+
+- `docs/product/`
+- `docs/requirements/`
+- `docs/architecture/`
+- `docs/planning/`
+- `docs/decisions/`
+- `docs/validation/`
+
+Older or imported source materials may live in place during onboarding or be
+preserved under `docs/onboarding/source-material/` after human review. When
+normalizing existing docs, use `docs/harness/TEMPLATE_REGISTRY.md` and
+`docs/onboarding/doc-sync-plan.md`.
+
 ## Reading Paths
 
 ### Human: Understand The Project

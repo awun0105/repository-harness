@@ -152,6 +152,20 @@ docs/decisions/*
 Before implementation, product docs describe intent. After implementation,
 product docs plus executable tests become the living contract.
 
+## Template Layer
+
+Templates standardize project docs, but template text is not source of truth by
+itself.
+
+Use `docs/harness/TEMPLATE_REGISTRY.md` before creating, normalizing, or syncing
+documentation. The registry maps each document type to an approved template,
+default output path, and review expectation. The machine-readable companion is
+`docs/harness/templates/manifest.yml`.
+
+For existing projects, templates are applied only after source inventory and a
+doc sync plan. Existing docs, code, tests, and config are evidence; they are not
+silently overwritten or promoted to canonical truth.
+
 ## Spec Lifecycle
 
 Harness v0 starts without a tracked project spec. When the human provides a
