@@ -95,6 +95,16 @@ should use that binary for Harness work. The database is local to each project
 instance and `.gitignore`d. The schema is version-controlled under
 `scripts/schema/`.
 
+The CLI also exposes lightweight template utilities:
+
+```bash
+scripts/bin/harness-cli template list
+scripts/bin/harness-cli scaffold source_inventory
+```
+
+These commands list and copy registered documentation templates. They do not
+audit a codebase or generate accepted project truth.
+
 This separation keeps policy docs stable and human-readable while giving agents
 a structured, queryable record of operational state. It also prepares the
 harness for future observability and automated evolution without adding more

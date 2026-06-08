@@ -13,8 +13,8 @@ use crate::application::{
 };
 use crate::domain::{
     normalize_token, score_trace, BacklogFilter, BacklogRecord, DecisionRecord, FrictionRecord,
-    HarnessStats, IntakeRecord, RiskLane, StoryMatrixRecord, StoryVerifyStatus, TraceRecord,
-    TraceScoreResult, TraceScoreSource,
+    HarnessStats, IntakeRecord, RiskLane, StoryMatrixRecord, StoryVerifyStatus, TemplateEntry,
+    TemplateScaffoldResult, TraceRecord, TraceScoreResult, TraceScoreSource,
 };
 
 pub type Result<T> = std::result::Result<T, HarnessInfraError>;
@@ -39,6 +39,18 @@ pub enum HarnessInfraError {
     TraceNotFound(i64),
     #[error("no traces found")]
     NoTraces,
+    #[error("template manifest missing: {0}")]
+    MissingTemplateManifest(String),
+    #[error("template '{0}' is not registered in docs/harness/templates/manifest.yml")]
+    UnknownTemplate(String),
+    #[error("template '{0}' has no default output; pass --output")]
+    TemplateNeedsOutput(String),
+    #[error("template source missing: {0}")]
+    MissingTemplateSource(String),
+    #[error("template output already exists: {0}. Pass --force to overwrite.")]
+    TemplateOutputExists(String),
+    #[error("template manifest is malformed: {0}")]
+    MalformedTemplateManifest(String),
     #[error("story update: nothing to update")]
     EmptyStoryUpdate,
     #[error("sqlite error: {0}")]
@@ -51,6 +63,13 @@ pub trait HarnessRepository {
     fn init(&self) -> Result<InitResult>;
     fn migrate(&self) -> Result<MigrateResult>;
     fn import_brownfield(&self) -> Result<BrownfieldImportResult>;
+    fn list_templates(&self) -> Result<Vec<TemplateEntry>>;
+    fn scaffold_template(
+        &self,
+        template_id: &str,
+        output: Option<String>,
+        force: bool,
+    ) -> Result<TemplateScaffoldResult>;
     fn record_intake(&self, input: IntakeInput) -> Result<i64>;
     fn add_story(&self, input: StoryAddInput) -> Result<()>;
     fn update_story(&self, input: StoryUpdateInput) -> Result<()>;
@@ -372,6 +391,21 @@ impl SqliteHarnessRepository {
 
         Ok(imported)
     }
+
+    fn template_manifest_path(&self) -> PathBuf {
+        self.repo_root.join("docs/harness/templates/manifest.yml")
+    }
+
+    fn load_template_manifest(&self) -> Result<Vec<TemplateEntry>> {
+        let manifest_path = self.template_manifest_path();
+        if !manifest_path.exists() {
+            return Err(HarnessInfraError::MissingTemplateManifest(
+                manifest_path.display().to_string(),
+            ));
+        }
+
+        parse_template_manifest(&fs::read_to_string(manifest_path)?)
+    }
 }
 
 impl HarnessRepository for SqliteHarnessRepository {
@@ -422,6 +456,51 @@ impl HarnessRepository for SqliteHarnessRepository {
             stories,
             decisions,
             backlog_items,
+        })
+    }
+
+    fn list_templates(&self) -> Result<Vec<TemplateEntry>> {
+        self.load_template_manifest()
+    }
+
+    fn scaffold_template(
+        &self,
+        template_id: &str,
+        output: Option<String>,
+        force: bool,
+    ) -> Result<TemplateScaffoldResult> {
+        let template = self
+            .load_template_manifest()?
+            .into_iter()
+            .find(|entry| entry.id == template_id)
+            .ok_or_else(|| HarnessInfraError::UnknownTemplate(template_id.to_owned()))?;
+        let output = output
+            .or_else(|| template.default_output.clone())
+            .ok_or_else(|| HarnessInfraError::TemplateNeedsOutput(template.id.clone()))?;
+        let template_path = self.repo_root.join(&template.template);
+        if !template_path.exists() {
+            return Err(HarnessInfraError::MissingTemplateSource(
+                template_path.display().to_string(),
+            ));
+        }
+
+        let output_path = self.repo_root.join(&output);
+        let overwritten = output_path.exists();
+        if overwritten && !force {
+            return Err(HarnessInfraError::TemplateOutputExists(
+                output_path.display().to_string(),
+            ));
+        }
+        if let Some(parent) = output_path.parent() {
+            fs::create_dir_all(parent)?;
+        }
+        fs::copy(&template_path, &output_path)?;
+
+        Ok(TemplateScaffoldResult {
+            template_id: template.id,
+            template_path: template.template,
+            output_path: output,
+            overwritten,
         })
     }
 
@@ -1064,6 +1143,97 @@ fn proof_from_cell(value: &str) -> i64 {
     }
 }
 
+fn parse_template_manifest(content: &str) -> Result<Vec<TemplateEntry>> {
+    let mut entries = Vec::new();
+    let mut current: Option<TemplateEntry> = None;
+
+    for raw_line in content.lines() {
+        let line = raw_line.trim_end();
+        if line.trim().is_empty() || line.trim_start().starts_with('#') {
+            continue;
+        }
+        if current.is_none() && !line.starts_with("  ") {
+            continue;
+        }
+        if line == "templates:" {
+            continue;
+        }
+
+        if line.starts_with("  ") && !line.starts_with("    ") && line.ends_with(':') {
+            if let Some(entry) = current.take() {
+                validate_template_entry(&entry)?;
+                entries.push(entry);
+            }
+            let id = line.trim().trim_end_matches(':').to_owned();
+            if id.is_empty() {
+                return Err(HarnessInfraError::MalformedTemplateManifest(
+                    "empty template id".to_owned(),
+                ));
+            }
+            current = Some(TemplateEntry {
+                id,
+                template: String::new(),
+                default_output: None,
+                default_output_pattern: None,
+                description: None,
+                requires_review: false,
+            });
+            continue;
+        }
+
+        if line.starts_with("    ") {
+            let Some(entry) = current.as_mut() else {
+                return Err(HarnessInfraError::MalformedTemplateManifest(format!(
+                    "field outside template entry: {}",
+                    line.trim()
+                )));
+            };
+            let Some((key, value)) = line.trim().split_once(':') else {
+                return Err(HarnessInfraError::MalformedTemplateManifest(format!(
+                    "invalid field: {}",
+                    line.trim()
+                )));
+            };
+            let value = value.trim().trim_matches('"').to_owned();
+            match key {
+                "template" => entry.template = value,
+                "default_output" => entry.default_output = empty_to_none(value),
+                "default_output_pattern" => entry.default_output_pattern = empty_to_none(value),
+                "description" => entry.description = empty_to_none(value),
+                "requires_review" => entry.requires_review = value == "true",
+                _ => {}
+            }
+            continue;
+        }
+
+        return Err(HarnessInfraError::MalformedTemplateManifest(format!(
+            "unexpected line: {}",
+            line.trim()
+        )));
+    }
+
+    if let Some(entry) = current {
+        validate_template_entry(&entry)?;
+        entries.push(entry);
+    }
+    if entries.is_empty() {
+        return Err(HarnessInfraError::MalformedTemplateManifest(
+            "no templates found".to_owned(),
+        ));
+    }
+    Ok(entries)
+}
+
+fn validate_template_entry(entry: &TemplateEntry) -> Result<()> {
+    if entry.template.is_empty() {
+        return Err(HarnessInfraError::MalformedTemplateManifest(format!(
+            "template '{}' has no template path",
+            entry.id
+        )));
+    }
+    Ok(())
+}
+
 fn normalize_story_status(value: &str) -> String {
     match normalize_token(value).as_str() {
         "planned" => "planned",
@@ -1234,6 +1404,115 @@ mod tests {
             .query_map([], |row| row.get::<_, String>(1))
             .unwrap();
         rows.collect::<std::result::Result<Vec<_>, _>>().unwrap()
+    }
+
+    #[test]
+    fn lists_and_scaffolds_registered_templates() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let repo_root = temp_dir.path().join("repo");
+        fs::create_dir_all(repo_root.join("docs/harness/templates/onboarding")).unwrap();
+        fs::write(
+            repo_root.join("docs/harness/templates/manifest.yml"),
+            r#"version: 1
+templates:
+  source_inventory:
+    template: docs/harness/templates/onboarding/source-inventory.md
+    default_output: docs/onboarding/source-inventory.md
+    description: Existing docs and source inventory
+    requires_review: true
+  product_domain:
+    template: docs/harness/templates/product/domain.md
+    default_output_pattern: docs/product/{domain}.md
+    description: Product domain contract
+    requires_review: true
+"#,
+        )
+        .unwrap();
+        fs::write(
+            repo_root.join("docs/harness/templates/onboarding/source-inventory.md"),
+            "# Source Inventory\n",
+        )
+        .unwrap();
+        let repository = SqliteHarnessRepository::new(
+            repo_root.clone(),
+            temp_dir.path().join("harness.db"),
+            repo_root.join("scripts/schema"),
+        );
+
+        let templates = repository.list_templates().unwrap();
+        let result = repository
+            .scaffold_template("source_inventory", None, false)
+            .unwrap();
+        let second = repository
+            .scaffold_template("source_inventory", None, false)
+            .unwrap_err();
+        let forced = repository
+            .scaffold_template("source_inventory", None, true)
+            .unwrap();
+
+        assert_eq!(templates.len(), 2);
+        assert_eq!(templates[0].id, "source_inventory");
+        assert_eq!(
+            templates[1].default_output_pattern.as_deref(),
+            Some("docs/product/{domain}.md")
+        );
+        assert_eq!(result.output_path, "docs/onboarding/source-inventory.md");
+        assert_eq!(
+            fs::read_to_string(repo_root.join("docs/onboarding/source-inventory.md")).unwrap(),
+            "# Source Inventory\n"
+        );
+        assert!(matches!(second, HarnessInfraError::TemplateOutputExists(_)));
+        assert!(forced.overwritten);
+    }
+
+    #[test]
+    fn scaffold_requires_output_for_pattern_only_templates() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let repo_root = temp_dir.path().join("repo");
+        fs::create_dir_all(repo_root.join("docs/harness/templates/product")).unwrap();
+        fs::write(
+            repo_root.join("docs/harness/templates/manifest.yml"),
+            r#"version: 1
+templates:
+  product_domain:
+    template: docs/harness/templates/product/domain.md
+    default_output_pattern: docs/product/{domain}.md
+    description: Product domain contract
+    requires_review: true
+"#,
+        )
+        .unwrap();
+        fs::write(
+            repo_root.join("docs/harness/templates/product/domain.md"),
+            "# Domain\n",
+        )
+        .unwrap();
+        let repository = SqliteHarnessRepository::new(
+            repo_root.clone(),
+            temp_dir.path().join("harness.db"),
+            repo_root.join("scripts/schema"),
+        );
+
+        let missing_output = repository
+            .scaffold_template("product_domain", None, false)
+            .unwrap_err();
+        let explicit = repository
+            .scaffold_template(
+                "product_domain",
+                Some("docs/product/tasks.md".to_owned()),
+                false,
+            )
+            .unwrap();
+
+        assert!(matches!(
+            missing_output,
+            HarnessInfraError::TemplateNeedsOutput(_)
+        ));
+        assert_eq!(explicit.output_path, "docs/product/tasks.md");
+        assert_eq!(
+            fs::read_to_string(repo_root.join("docs/product/tasks.md")).unwrap(),
+            "# Domain\n"
+        );
     }
 
     #[test]

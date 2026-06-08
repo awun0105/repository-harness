@@ -58,6 +58,15 @@ In this repo, those answers live in:
 - `docs/decisions/` — durable decisions and tradeoffs.
 - `docs/harness/templates/` — reusable onboarding, story, decision, validation,
   and README/docs templates.
+- `docs/harness/TEMPLATE_REGISTRY.md` — the map from doc type to registered
+  template and output path.
+
+The CLI can list and copy registered templates:
+
+```bash
+scripts/bin/harness-cli template list
+scripts/bin/harness-cli scaffold source_inventory
+```
 
 OpenAI describes this shift as an agent-first world where humans steer and
 agents execute:

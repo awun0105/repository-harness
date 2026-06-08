@@ -13,7 +13,9 @@ normalizing, or syncing Project Harness documentation.
   or rewriting existing project docs.
 - Mark assumptions, conflicts, and unknowns explicitly.
 - Use `docs/harness/templates/manifest.yml` for machine-readable template
-  metadata and future CLI scaffold commands.
+  metadata and CLI scaffold commands.
+- `harness-cli scaffold` copies registered templates only; it does not generate
+  accepted project truth.
 
 ## Template Map
 
@@ -54,3 +56,16 @@ When a repository already has docs, agents must use this sequence:
 For a new project spec, agents may create draft docs directly from registered
 templates, but the drafts are not accepted source of truth until reviewed or
 confirmed by the human.
+
+## CLI Support
+
+Use the CLI to inspect and copy registered templates:
+
+```bash
+scripts/bin/harness-cli template list
+scripts/bin/harness-cli scaffold source_inventory
+scripts/bin/harness-cli scaffold product_domain --output docs/product/tasks.md
+```
+
+`scaffold` refuses to overwrite existing files unless `--force` is passed.
+Pattern-only templates require `--output`.
