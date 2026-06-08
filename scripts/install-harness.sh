@@ -525,9 +525,9 @@ default_cli_base_url() {
   fi
 
   if [ -n "$release_tag" ] && [ "$release_tag" != "latest" ]; then
-    printf 'https://github.com/hoangnb24/repository-harness/releases/download/%s\n' "$release_tag"
+    printf 'https://github.com/awun0105/repository-harness/releases/download/%s\n' "$release_tag"
   else
-    printf 'https://github.com/hoangnb24/repository-harness/releases/latest/download\n'
+    printf 'https://github.com/awun0105/repository-harness/releases/latest/download\n'
   fi
 }
 

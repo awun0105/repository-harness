@@ -160,10 +160,9 @@ that tag, or set `HARNESS_CLI_BASE_URL` to point at an alternate artifact
 directory, such as a local `file:///.../dist` directory created by
 `scripts/build-harness-cli-release.sh`.
 
-This fork installs Project Harness source files from
-`awun0105/repository-harness` but still downloads CLI release assets from the
-upstream release location until this fork publishes its own `harness-cli-*`
-artifacts. Override `HARNESS_CLI_BASE_URL` when testing fork-built CLI assets.
+This fork installs Project Harness source files and CLI release assets from
+`awun0105/repository-harness`. Override `HARNESS_CLI_BASE_URL` when testing
+locally built CLI assets before publishing a release.
 
 ## Schema Migrations
 

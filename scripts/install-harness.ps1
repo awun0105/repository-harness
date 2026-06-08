@@ -212,9 +212,9 @@ function Get-DefaultCliBaseUrl {
         $tag = Read-CliReleaseTag
     }
     if (![string]::IsNullOrWhiteSpace($tag) -and $tag -ne "latest") {
-        return "https://github.com/hoangnb24/repository-harness/releases/download/$tag"
+        return "https://github.com/awun0105/repository-harness/releases/download/$tag"
     }
-    return "https://github.com/hoangnb24/repository-harness/releases/latest/download"
+    return "https://github.com/awun0105/repository-harness/releases/latest/download"
 }
 
 function Install-HarnessCliBinary {
