@@ -858,8 +858,10 @@ docs/harness/HARNESS_BACKLOG.md
 docs/harness/HARNESS_COMPONENTS.md
 docs/harness/HARNESS_MATURITY.md
 docs/harness/ONBOARDING_EXISTING_PROJECT.md
+docs/harness/TEMPLATE_REGISTRY.md
 docs/harness/TRACE_SPEC.md
 docs/harness/templates/decisions/decision.md
+docs/harness/templates/manifest.yml
 docs/harness/templates/docs-suite/README.md
 docs/harness/templates/docs-suite/EN/README.md
 docs/harness/templates/docs-suite/EN/api.md
