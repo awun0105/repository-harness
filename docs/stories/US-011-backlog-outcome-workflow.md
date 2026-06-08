@@ -16,12 +16,12 @@ when closed, and backlog queries can filter open and closed items.
 ## Relevant Product Docs
 
 - `PHASE3.md`
-- `docs/HARNESS.md`
+- `docs/harness/HARNESS.md`
 - `docs/GLOSSARY.md`
 
 ## Acceptance Criteria
 
-- `docs/HARNESS.md` documents the predicted-impact to actual-outcome loop.
+- `docs/harness/HARNESS.md` documents the predicted-impact to actual-outcome loop.
 - `scripts/bin/harness-cli query backlog --open` shows only proposed and accepted
   items.
 - `scripts/bin/harness-cli query backlog --closed` shows only implemented and rejected

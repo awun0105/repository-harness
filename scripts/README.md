@@ -76,15 +76,15 @@ scripts/bin/harness-cli query sql ...
 ```
 
 `scripts/bin/harness-cli import brownfield` seeds or refreshes the durable database
-from existing Harness v0 markdown in `docs/TEST_MATRIX.md`,
-`docs/decisions/`, and `docs/HARNESS_BACKLOG.md`. This keeps already-installed
+from existing Harness v0 markdown in `docs/validation/test-matrix.md`,
+`docs/decisions/`, and `docs/harness/HARNESS_BACKLOG.md`. This keeps already-installed
 Harness repos on the Rust CLI path without losing their populated operating
 docs.
 
 ## Installer
 
-The upstream installer applies the Harness v0 operating files and folder
-structure to a target project directory. It defaults to the current directory,
+The installer applies Project Harness files and folder structure to a target
+project directory. It defaults to the current directory,
 accepts a target path, and asks interactive users whether to `1. Merge`,
 `2. Override`, or `3. Stop` when the target already contains `AGENTS.md`,
 `docs/`, or `scripts/`.
@@ -95,6 +95,17 @@ missing Harness files. Add `--refresh-agent-shim` when an older install has the
 full generated Harness guide in `AGENTS.md` and should move to the small stable
 shim. Use `--override` only when replacing the protected Harness surface is
 intentional.
+
+Choose an installation layout:
+
+| Layout | Use when | Installs |
+| --- | --- | --- |
+| `project` | New repos or repos intentionally adopting the full shared source-of-truth structure | Full docs map, product/requirements/architecture/planning/onboarding/stories/decisions/validation/harness areas |
+| `harness-only` | Existing repos whose current docs must not be polluted before baseline audit | `AGENTS.md`, `docs/README.md`, `docs/harness/`, templates, `docs/validation/`, scripts, and `.gitignore` rules |
+
+`project` is the default. Use `harness-only` with `--merge` for most existing
+codebases, then run `docs/harness/ONBOARDING_EXISTING_PROJECT.md` as the first
+task.
 
 ```bash
 curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --yes
@@ -110,6 +121,14 @@ curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/
 
 ```powershell
 & ([scriptblock]::Create((irm "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.ps1"))) -Merge -Yes
+```
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout harness-only --merge --yes
+```
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.ps1"))) -Layout harness-only -Merge -Yes
 ```
 
 ```bash

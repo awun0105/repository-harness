@@ -5,7 +5,7 @@ usage() {
   cat <<'EOF'
 Usage: install-harness.sh [options] [path]
 
-Apply the Harness v0 files and folders to a target project directory.
+Apply Project Harness files and folders to a target project directory.
 
 Options:
   -d, --directory <path>  Target directory. Defaults to the current directory.
@@ -19,9 +19,13 @@ Options:
       --claude           Also install or refresh CLAUDE.md so Claude Code
                          auto-loads the harness context. Claude Code never
                          auto-loads AGENTS.md; the shim @-imports AGENTS.md
-                         and docs/FEATURE_INTAKE.md inside a marked block.
+                         and docs/harness/FEATURE_INTAKE.md inside a marked block.
                          Existing CLAUDE.md files get the block appended
                          after a backup; a stale block is refreshed in place.
+      --layout <layout>  Files to install: project or harness-only.
+                         project installs the full shared docs layout.
+                         harness-only avoids product/architecture/planning docs
+                         for existing repos that need a baseline audit first.
       --override         On protected-path conflict, back up and replace
                          AGENTS.md, docs/, and scripts/.
       --force            Overwrite existing files after backing them up.
@@ -45,6 +49,7 @@ Examples:
   curl -fsSL https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh | bash -s -- --merge --yes
   curl -fsSL https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh | bash -s -- --merge --refresh-agent-shim --yes
   curl -fsSL https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh | bash -s -- --claude --yes
+  curl -fsSL https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh | bash -s -- --layout harness-only --merge --yes
 EOF
 }
 
@@ -202,14 +207,17 @@ agent_shim_block() {
 This repo uses Harness. Before work, read:
 
 - `README.md`
-- `docs/HARNESS.md`
-- `docs/FEATURE_INTAKE.md`
-- `docs/ARCHITECTURE.md`
-- `docs/CONTEXT_RULES.md`
+- `docs/README.md`
+- `docs/harness/HARNESS.md`
+- `docs/harness/FEATURE_INTAKE.md`
+- `docs/architecture/overview.md`
+- `docs/harness/CONTEXT_RULES.md`
 - `scripts/bin/harness-cli query matrix`
 
 Use the Rust Harness CLI at `scripts/bin/harness-cli` as the main operational
-tool.
+tool. If the CLI binary is unavailable in a checkout, read
+`docs/validation/test-matrix.md` directly and state that the durable matrix
+could not be queried.
 <!-- HARNESS:END -->
 EOF
 }
@@ -221,18 +229,20 @@ claude_shim_block() {
 
 Claude Code loads this file into every session, but it does not auto-load
 `AGENTS.md`. The bare `@` lines below import the always-required harness
-context (the "Must in all lanes" set from `docs/CONTEXT_RULES.md`) at
+context (the "Must in all lanes" set from `docs/harness/CONTEXT_RULES.md`) at
 context-load time. Never wrap them in backticks; that disables the import.
 
 @AGENTS.md
 
-@docs/FEATURE_INTAKE.md
+@docs/harness/FEATURE_INTAKE.md
 
 Also run `scripts/bin/harness-cli query matrix` before starting work.
+If the binary is unavailable, read `docs/validation/test-matrix.md` directly
+and state that the durable matrix could not be queried.
 
-Lane-dependent context (`README.md`, `docs/HARNESS.md`, `docs/ARCHITECTURE.md`,
-`docs/CONTEXT_RULES.md`, product docs, stories, decisions) is intentionally not
-imported — read it per lane, as `docs/CONTEXT_RULES.md` prescribes.
+Lane-dependent context (`README.md`, `docs/harness/HARNESS.md`, `docs/architecture/overview.md`,
+`docs/harness/CONTEXT_RULES.md`, product docs, stories, decisions) is intentionally not
+imported — read it per lane, as `docs/harness/CONTEXT_RULES.md` prescribes.
 <!-- HARNESS:END -->
 EOF
 }
@@ -675,6 +685,7 @@ REFRESH_AGENT_SHIM=0
 INSTALL_CLAUDE_SHIM=0
 REQUESTED_CONFLICT_ACTION=""
 POSITIONAL_TARGET=""
+LAYOUT="${HARNESS_LAYOUT:-project}"
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -702,6 +713,11 @@ while [ "$#" -gt 0 ]; do
     --claude)
       INSTALL_CLAUDE_SHIM=1
       shift
+      ;;
+    --layout)
+      [ "$#" -ge 2 ] || fail "$1 requires a layout"
+      LAYOUT="$2"
+      shift 2
       ;;
     --override)
       REQUESTED_CONFLICT_ACTION="override"
@@ -742,6 +758,17 @@ fi
 
 [ "$#" -eq 0 ] || fail "Unexpected extra arguments"
 
+case "$LAYOUT" in
+  project|harness-only)
+    ;;
+  legacy)
+    fail "--layout legacy is not available in the Project Harness fork yet. Use --layout project or --layout harness-only."
+    ;;
+  *)
+    fail "Unknown layout: $LAYOUT. Expected project or harness-only."
+    ;;
+esac
+
 if [ -n "$POSITIONAL_TARGET" ]; then
   TARGET_INPUT="$POSITIONAL_TARGET"
 fi
@@ -755,7 +782,7 @@ SOURCE_BASE_URL="${SOURCE_BASE_URL%/}"
 CLI_BASE_URL="${HARNESS_CLI_BASE_URL:-}"
 CLI_BASE_URL="${CLI_BASE_URL%/}"
 
-if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/../AGENTS.md" ] && [ -f "$SCRIPT_DIR/../docs/HARNESS.md" ]; then
+if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/../AGENTS.md" ] && [ -f "$SCRIPT_DIR/../docs/harness/HARNESS.md" ]; then
   SOURCE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd -P)"
   SOURCE_MODE="local"
 fi
@@ -765,7 +792,7 @@ if [ -z "$CLI_BASE_URL" ]; then
 fi
 
 if [ "$YES" -eq 0 ] && can_prompt; then
-  prompt_tty "Install Harness v0 into [$TARGET_INPUT]: "
+  prompt_tty "Install Project Harness into [$TARGET_INPUT]: "
   REPLY_TARGET="$(read_tty)"
   if [ -n "$REPLY_TARGET" ]; then
     TARGET_INPUT="$REPLY_TARGET"
@@ -812,23 +839,82 @@ else
   log "Harness CLI source: skipped"
 fi
 log "Target project: $TARGET_DIR"
+log "Layout: $LAYOUT"
 
-while IFS= read -r relative; do
-  copy_file "$relative"
-done <<'EOF'
+install_manifest() {
+  while IFS= read -r relative; do
+    [ -n "$relative" ] || continue
+    copy_file "$relative"
+  done
+}
+
+install_manifest <<'EOF'
 AGENTS.md
-README.md
-docs/ARCHITECTURE.md
-docs/CONTEXT_RULES.md
-docs/FEATURE_INTAKE.md
-docs/GLOSSARY.md
-docs/HARNESS.md
-docs/HARNESS_BACKLOG.md
-docs/HARNESS_COMPONENTS.md
-docs/HARNESS_MATURITY.md
+docs/harness/CONTEXT_RULES.md
+docs/harness/FEATURE_INTAKE.md
+docs/harness/HARNESS.md
+docs/harness/HARNESS_BACKLOG.md
+docs/harness/HARNESS_COMPONENTS.md
+docs/harness/HARNESS_MATURITY.md
+docs/harness/ONBOARDING_EXISTING_PROJECT.md
+docs/harness/TRACE_SPEC.md
+docs/harness/templates/baseline-audit.md
+docs/harness/templates/decision.md
+docs/harness/templates/doc-conflict.md
+docs/harness/templates/spec-intake.md
+docs/harness/templates/story.md
+docs/harness/templates/validation-report.md
+docs/harness/templates/high-risk-story/design.md
+docs/harness/templates/high-risk-story/execplan.md
+docs/harness/templates/high-risk-story/overview.md
+docs/harness/templates/high-risk-story/validation.md
+docs/harness/templates/readme-suite/README.md
+docs/harness/templates/readme-suite/README_TEMPLATE.md
+docs/harness/templates/readme-suite/README_VN.md
+docs/harness/templates/readme-suite/README_VN_TEMPLATE.md
+docs/harness/templates/readme-suite/docs/README.md
+docs/harness/templates/readme-suite/docs/EN/README.md
+docs/harness/templates/readme-suite/docs/EN/api.md
+docs/harness/templates/readme-suite/docs/EN/architecture.md
+docs/harness/templates/readme-suite/docs/EN/configuration.md
+docs/harness/templates/readme-suite/docs/EN/data-flow.md
+docs/harness/templates/readme-suite/docs/EN/deployment/backup-restore.md
+docs/harness/templates/readme-suite/docs/EN/deployment/setup.md
+docs/harness/templates/readme-suite/docs/EN/evaluation.md
+docs/harness/templates/readme-suite/docs/EN/local-development.md
+docs/harness/templates/readme-suite/docs/EN/operations.md
+docs/harness/templates/readme-suite/docs/EN/overview.md
+docs/harness/templates/readme-suite/docs/EN/scripts.md
+docs/harness/templates/readme-suite/docs/VN/README.md
+docs/harness/templates/readme-suite/docs/VN/api.md
+docs/harness/templates/readme-suite/docs/VN/architecture.md
+docs/harness/templates/readme-suite/docs/VN/configuration.md
+docs/harness/templates/readme-suite/docs/VN/data-flow.md
+docs/harness/templates/readme-suite/docs/VN/deployment/backup-restore.md
+docs/harness/templates/readme-suite/docs/VN/deployment/setup.md
+docs/harness/templates/readme-suite/docs/VN/evaluation.md
+docs/harness/templates/readme-suite/docs/VN/local-development.md
+docs/harness/templates/readme-suite/docs/VN/operations.md
+docs/harness/templates/readme-suite/docs/VN/overview.md
+docs/harness/templates/readme-suite/docs/VN/scripts.md
 docs/README.md
-docs/TEST_MATRIX.md
-docs/TRACE_SPEC.md
+docs/validation/README.md
+docs/validation/test-matrix.md
+scripts/README.md
+scripts/schema/001-init.sql
+scripts/schema/002-story-verify.sql
+.gitignore
+EOF
+
+if [ "$LAYOUT" = "project" ]; then
+  install_manifest <<'EOF'
+README.md
+docs/architecture/README.md
+docs/architecture/overview.md
+docs/GLOSSARY.md
+docs/onboarding/README.md
+docs/planning/README.md
+docs/requirements/README.md
 docs/decisions/0001-harness-first-development.md
 docs/decisions/0002-post-spec-product-lifecycle.md
 docs/decisions/0003-generic-spec-intake-harness.md
@@ -839,19 +925,8 @@ docs/decisions/README.md
 docs/product/README.md
 docs/stories/README.md
 docs/stories/backlog.md
-docs/templates/decision.md
-docs/templates/spec-intake.md
-docs/templates/story.md
-docs/templates/validation-report.md
-docs/templates/high-risk-story/design.md
-docs/templates/high-risk-story/execplan.md
-docs/templates/high-risk-story/overview.md
-docs/templates/high-risk-story/validation.md
-scripts/README.md
-scripts/schema/001-init.sql
-scripts/schema/002-story-verify.sql
-.gitignore
 EOF
+fi
 
 refresh_agent_shim
 write_claude_shim

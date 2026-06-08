@@ -1,9 +1,12 @@
-# Harness
+# Project Harness
 
 The project goal is to provide a reusable operating harness that lets humans and
-agents turn a future product spec into safe, validated work.
+agents share one project source of truth and turn intent into safe, validated
+work.
 
-The app is what users touch. The harness is what agents touch.
+Humans and agents use the same product, requirement, architecture, decision, and
+validation docs. `docs/harness/` only describes the operating rules for how
+agents should read and update that shared truth.
 
 ## Mental Model
 
@@ -59,7 +62,7 @@ Every task has two possible outputs:
 Harness v0 includes:
 
 - Agent entrypoint.
-- Empty product documentation structure.
+- Shared project documentation structure.
 - Feature intake and risk lanes.
 - Story templates.
 - Decision log template.
@@ -67,6 +70,7 @@ Harness v0 includes:
 - Test matrix placeholder.
 - Harness growth backlog.
 - Durable layer: SQLite database and CLI for operational records.
+- Existing-project onboarding workflow.
 
 Harness v0 deliberately excludes:
 
@@ -127,13 +131,19 @@ User-provided spec or prompt
   input material for first buildout or future changes
 
 docs/product/*
-  current product contract derived from accepted input
+  current product contract derived from accepted input or existing code audit
+
+docs/requirements/*
+  SRS, DFD, use cases, non-functional requirements, and supplied specs
+
+docs/architecture/*
+  technical source of truth and boundary rules
 
 docs/stories/*
   story-sized work packets and historical evidence
 
-scripts/bin/harness-cli query matrix
-  behavior-to-proof control panel backed by the durable layer
+docs/validation/test-matrix.md or scripts/bin/harness-cli query matrix
+  behavior-to-proof control panel
 
 docs/decisions/*
   why the contract changed
@@ -157,6 +167,8 @@ Ongoing work should enter the harness as one of these input types:
 
 - New spec: a project specification that needs to become product docs and
   initial story candidates.
+- Existing project onboarding: an audit that turns current code, tests, and
+  existing docs into truthful baseline project docs before feature work.
 - Spec slice: a selected behavior from the provided spec.
 - Change request: a bounded behavior change, bug fix, or product refinement.
 - New initiative: a larger product area that needs multiple stories.
@@ -221,16 +233,18 @@ items; `low` is not a valid lane.
 
 For every task:
 
-1. Classify the request with `docs/FEATURE_INTAKE.md`.
+1. Classify the request with `docs/harness/FEATURE_INTAKE.md`.
 2. Record the classification with `scripts/bin/harness-cli intake`.
 3. Locate the affected product docs and story files.
-4. Check proof status with `scripts/bin/harness-cli query matrix`.
+4. Check proof status with `scripts/bin/harness-cli query matrix`; if the CLI
+   is unavailable, read `docs/validation/test-matrix.md` and state the durable
+   matrix could not be queried.
 5. Work only inside the selected lane: tiny, normal, or high-risk.
 6. Before finishing, ask whether product truth, validation expectations,
    architecture rules, repeated failure patterns, or next-agent instructions
    changed.
 7. Record a trace with `scripts/bin/harness-cli trace`, using
-   `docs/TRACE_SPEC.md` for the expected trace tier and field depth.
+   `docs/harness/TRACE_SPEC.md` for the expected trace tier and field depth.
 8. Review the trace score printed by `scripts/bin/harness-cli trace`; use
    `scripts/bin/harness-cli score-trace --id <id>` only when re-checking a
    specific historical trace.
@@ -268,7 +282,7 @@ For auth, authorization, data ownership, API shape, audit/security, or
 validation changes, record the decision in both places:
 
 1. Add a markdown file under `docs/decisions/` from
-   `docs/templates/decision.md`.
+   `docs/harness/templates/decision.md`.
 2. Add or refresh the durable record:
 
 ```bash

@@ -12,18 +12,18 @@ normal
 
 Agents can run `scripts/bin/harness-cli score-trace` to score the latest trace, or
 `scripts/bin/harness-cli score-trace --id N` to score a specific trace, against the
-trace quality tiers in `docs/TRACE_SPEC.md`.
+trace quality tiers in `docs/harness/TRACE_SPEC.md`.
 
 ## Relevant Product Docs
 
 - `PHASE3.md`
-- `docs/TRACE_SPEC.md`
-- `docs/HARNESS_MATURITY.md`
-- `docs/HARNESS_COMPONENTS.md`
+- `docs/harness/TRACE_SPEC.md`
+- `docs/harness/HARNESS_MATURITY.md`
+- `docs/harness/HARNESS_COMPONENTS.md`
 
 ## Acceptance Criteria
 
-- Scores minimal, standard, and detailed traces using `docs/TRACE_SPEC.md`
+- Scores minimal, standard, and detailed traces using `docs/harness/TRACE_SPEC.md`
   field-presence rules.
 - Looks up linked intake lane when `intake_id` is present and reports the
   required tier.
@@ -55,7 +55,7 @@ trace quality tiers in `docs/TRACE_SPEC.md`.
 
 ## Harness Delta
 
-`docs/TRACE_SPEC.md` review guidance should reference the scoring command as
+`docs/harness/TRACE_SPEC.md` review guidance should reference the scoring command as
 the mechanical final check for normal and high-risk work.
 
 ## Evidence

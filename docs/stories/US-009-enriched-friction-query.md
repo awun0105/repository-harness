@@ -16,8 +16,8 @@ linked intake record alongside each friction entry.
 ## Relevant Product Docs
 
 - `PHASE3.md`
-- `docs/TRACE_SPEC.md`
-- `docs/HARNESS_COMPONENTS.md`
+- `docs/harness/TRACE_SPEC.md`
+- `docs/harness/HARNESS_COMPONENTS.md`
 
 ## Acceptance Criteria
 

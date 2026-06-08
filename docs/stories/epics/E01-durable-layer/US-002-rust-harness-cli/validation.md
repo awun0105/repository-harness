@@ -98,8 +98,8 @@ Remove-Item -Recurse -Force $target
   `trace`, `query matrix`, `query backlog`, `query decisions`, `query
   intakes`, `query traces`, `query friction`, `query stats`, and `query sql`.
 - Brownfield import fixture test passed: existing Harness v0 markdown seeded a
-  story from `docs/TEST_MATRIX.md`, a decision from `docs/decisions/`, and
-  multiple backlog items from `docs/HARNESS_BACKLOG.md`; rerunning the importer
+  story from `docs/validation/test-matrix.md`, a decision from `docs/decisions/`, and
+  multiple backlog items from `docs/harness/HARNESS_BACKLOG.md`; rerunning the importer
   did not duplicate backlog rows.
 - Installer E2E passed using the local `dist` release source. It downloaded
   `scripts/bin/harness-cli`, verified the checksum, ran `scripts/bin/harness-cli init`,

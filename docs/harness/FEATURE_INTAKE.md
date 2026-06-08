@@ -1,8 +1,9 @@
 # Feature Intake
 
 Every implementation prompt enters the intake gate before code changes. A new
-project spec also enters through this gate before it becomes product docs,
-stories, or implementation work.
+project spec or existing-project onboarding request also enters through this
+gate before it becomes product docs, stories, validation expectations, or
+implementation work.
 
 The human does not need to classify risk. The harness does.
 
@@ -35,6 +36,7 @@ lane.
 | Type | Use when | Typical artifact |
 | --- | --- | --- |
 | New spec | Turning a user-provided project spec into harness-ready docs | Product docs, candidate epics, decisions |
+| Existing project onboarding | Installing Project Harness into a repo that already has code, docs, tests, or unclear implementation state | Baseline audit, current-state docs, architecture overview, validation matrix, inferred backlog |
 | Spec slice | Implementing selected behavior from an accepted spec | Story packet |
 | Change request | Changing, fixing, or refining accepted behavior | Story packet or direct patch |
 | New initiative | Adding a larger product area that needs multiple stories | Initiative notes plus story packets |
@@ -43,6 +45,10 @@ lane.
 
 Do not create or extend a monolithic spec by default after intake. Use product
 docs, stories, decisions, and initiative notes as the living surface.
+
+When onboarding an existing project, do not treat empty or generated docs as
+truth. Follow `docs/harness/ONBOARDING_EXISTING_PROJECT.md` and label findings
+as `confirmed`, `partial`, `unknown`, or `not implemented`.
 
 ## Lanes
 
@@ -70,7 +76,7 @@ Use for story-sized behavior with bounded blast radius.
 
 Requirements:
 
-- Create or update one story file from `docs/templates/story.md`.
+- Create or update one story file from `docs/harness/templates/story.md`.
 - Link relevant product docs.
 - Add or update validation expectations.
 - Implement the smallest vertical slice when implementation exists.
@@ -84,12 +90,12 @@ roles/platforms.
 
 Requirements:
 
-- Create a story folder using `docs/templates/high-risk-story/`.
+- Create a story folder using `docs/harness/templates/high-risk-story/`.
 - Fill in `execplan.md`, `overview.md`, `design.md`, and `validation.md`.
 - Ask for human confirmation before implementation if direction is ambiguous.
 - Record a durable decision when behavior, architecture, authorization, data
   ownership, API shape, or validation requirements change meaningfully. Use a
-  `docs/decisions/NNNN-*.md` file from `docs/templates/decision.md`, then add
+  `docs/decisions/NNNN-*.md` file from `docs/harness/templates/decision.md`, then add
   or refresh the durable row with `scripts/bin/harness-cli decision add`.
   Decision text in a trace is not a durable decision record.
 

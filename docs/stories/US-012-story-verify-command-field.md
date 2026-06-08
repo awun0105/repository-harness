@@ -16,7 +16,7 @@ timestamp and result.
 ## Relevant Product Docs
 
 - `PHASE4.md`
-- `docs/HARNESS.md`
+- `docs/harness/HARNESS.md`
 - `scripts/schema/002-story-verify.sql`
 
 ## Acceptance Criteria

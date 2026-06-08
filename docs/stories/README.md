@@ -7,7 +7,7 @@ No story packets are active yet.
 
 ## Normal Story
 
-Use `docs/templates/story.md` for normal feature work.
+Use `docs/harness/templates/story.md` for normal feature work.
 
 Suggested path:
 
@@ -17,7 +17,7 @@ docs/stories/epics/E01-domain-name/US-001-short-story-title.md
 
 ## High-Risk Story
 
-Use `docs/templates/high-risk-story/` when the feature intake classifies work as
+Use `docs/harness/templates/high-risk-story/` when the feature intake classifies work as
 high-risk.
 
 Suggested path:

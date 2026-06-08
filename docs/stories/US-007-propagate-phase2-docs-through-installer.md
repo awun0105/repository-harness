@@ -15,31 +15,31 @@ need for observability, maturity tracking, trace quality, and context
 selection. Existing Harness installs using `--merge` receive missing Phase 2
 docs without overwriting existing files. Existing installs using
 `--merge --refresh-agent-shim` also receive an `AGENTS.md` Harness block that
-references `docs/CONTEXT_RULES.md`.
+references `docs/harness/CONTEXT_RULES.md`.
 
 ## Relevant Product Docs
 
 - `AGENTS.md`
-- `docs/CONTEXT_RULES.md`
-- `docs/HARNESS_COMPONENTS.md`
-- `docs/HARNESS_MATURITY.md`
-- `docs/TRACE_SPEC.md`
+- `docs/harness/CONTEXT_RULES.md`
+- `docs/harness/HARNESS_COMPONENTS.md`
+- `docs/harness/HARNESS_MATURITY.md`
+- `docs/harness/TRACE_SPEC.md`
 - `scripts/README.md`
 - `scripts/install-harness.sh`
 
 ## Acceptance Criteria
 
 - The installer payload includes:
-  - `docs/CONTEXT_RULES.md`
-  - `docs/HARNESS_COMPONENTS.md`
-  - `docs/HARNESS_MATURITY.md`
-  - `docs/TRACE_SPEC.md`
-- The hardcoded AGENTS shim refresh block includes `docs/CONTEXT_RULES.md`.
+  - `docs/harness/CONTEXT_RULES.md`
+  - `docs/harness/HARNESS_COMPONENTS.md`
+  - `docs/harness/HARNESS_MATURITY.md`
+  - `docs/harness/TRACE_SPEC.md`
+- The hardcoded AGENTS shim refresh block includes `docs/harness/CONTEXT_RULES.md`.
 - A fresh local install creates the Phase 2 docs.
 - A merge install into an existing Harness target creates missing Phase 2 docs
   without overwriting existing Harness files.
 - A merge install with `--refresh-agent-shim` refreshes the marked Harness
-  block to include `docs/CONTEXT_RULES.md`.
+  block to include `docs/harness/CONTEXT_RULES.md`.
 
 ## Design Notes
 
@@ -70,14 +70,14 @@ but not yet propagated by the installer.
 
 - `bash -n scripts/install-harness.sh`
 - `rg -n "docs/(CONTEXT_RULES|HARNESS_COMPONENTS|HARNESS_MATURITY|TRACE_SPEC)\.md" scripts/install-harness.sh`
-- `rg -n "docs/CONTEXT_RULES.md" scripts/install-harness.sh AGENTS.md`
+- `rg -n "docs/harness/CONTEXT_RULES.md" scripts/install-harness.sh AGENTS.md`
 - Fresh local install into a temporary target using a local
   `HARNESS_CLI_BASE_URL` created all four Phase 2 docs, wrote an AGENTS shim
-  with `docs/CONTEXT_RULES.md`, and installed an executable
+  with `docs/harness/CONTEXT_RULES.md`, and installed an executable
   `scripts/bin/harness-cli`.
 - Merge install into a temporary existing Harness target created the missing
   Phase 2 docs while preserving existing `docs/README.md` and
   `scripts/bin/harness-cli`.
 - Merge install with `--refresh-agent-shim` created the missing Phase 2 docs
   and refreshed the marked AGENTS Harness block to include
-  `docs/CONTEXT_RULES.md`.
+  `docs/harness/CONTEXT_RULES.md`.

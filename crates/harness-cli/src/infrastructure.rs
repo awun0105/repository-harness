@@ -171,7 +171,7 @@ impl SqliteHarnessRepository {
     }
 
     fn import_matrix(&self, connection: &Connection) -> Result<usize> {
-        let matrix_path = self.repo_root.join("docs/TEST_MATRIX.md");
+        let matrix_path = self.repo_root.join("docs/validation/test-matrix.md");
         if !matrix_path.exists() {
             return Err(HarnessInfraError::MissingBrownfieldPath(
                 matrix_path.display().to_string(),
@@ -234,7 +234,7 @@ impl SqliteHarnessRepository {
                     unit_proof, integration_proof, e2e_proof, platform_proof,
                     evidence, notes
                  ) VALUES (?1, ?2, 'high_risk', ?3, ?4, ?5, ?6, ?7, ?8, ?9,
-                    'Imported from docs/TEST_MATRIX.md by harness import brownfield.'
+                    'Imported from docs/validation/test-matrix.md by harness import brownfield.'
                  )
                  ON CONFLICT(id) DO UPDATE SET
                     title=excluded.title,
@@ -332,7 +332,7 @@ impl SqliteHarnessRepository {
     }
 
     fn import_backlog(&self, connection: &Connection) -> Result<usize> {
-        let backlog_path = self.repo_root.join("docs/HARNESS_BACKLOG.md");
+        let backlog_path = self.repo_root.join("docs/harness/HARNESS_BACKLOG.md");
         if !backlog_path.exists() {
             return Ok(0);
         }
@@ -363,7 +363,7 @@ impl SqliteHarnessRepository {
                     risk, status, notes
                  )
                  SELECT ?1, ?2, ?3, ?4, ?5, ?6,
-                    'Imported from docs/HARNESS_BACKLOG.md by harness import brownfield.'
+                    'Imported from docs/harness/HARNESS_BACKLOG.md by harness import brownfield.'
                  WHERE NOT EXISTS (
                     SELECT 1 FROM backlog WHERE title=?1
                  );",
@@ -1653,8 +1653,10 @@ mod tests {
         let temp_dir = tempfile::tempdir().unwrap();
         let repo_root = temp_dir.path().join("repo");
         fs::create_dir_all(repo_root.join("docs/decisions")).unwrap();
+        fs::create_dir_all(repo_root.join("docs/harness")).unwrap();
+        fs::create_dir_all(repo_root.join("docs/validation")).unwrap();
         fs::write(
-            repo_root.join("docs/TEST_MATRIX.md"),
+            repo_root.join("docs/validation/test-matrix.md"),
             r#"# Test Matrix
 
 | Story | Contract | Unit | Integration | E2E | Platform | Status | Evidence |
@@ -1674,7 +1676,7 @@ Accepted
         )
         .unwrap();
         fs::write(
-            repo_root.join("docs/HARNESS_BACKLOG.md"),
+            repo_root.join("docs/harness/HARNESS_BACKLOG.md"),
             r#"# Harness Backlog
 
 ## Items

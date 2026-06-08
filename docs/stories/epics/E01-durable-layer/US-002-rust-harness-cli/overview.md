@@ -36,8 +36,8 @@ making the implementation typed and releaseable.
 
 - `AGENTS.md`
 - `README.md`
-- `docs/HARNESS.md`
-- `docs/ARCHITECTURE.md`
+- `docs/harness/HARNESS.md`
+- `docs/architecture/overview.md`
 - `scripts/README.md`
 - `docs/decisions/0004-sqlite-durable-layer.md`
 - `docs/decisions/0005-prebuilt-rust-harness-cli.md`
