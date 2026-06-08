@@ -13,6 +13,7 @@ implemented until tests or validation evidence exist.
 | in_progress | Actively being built |
 | partial | Partly implemented or weakly proven |
 | unknown | Mentioned or expected, but current proof is unclear |
+| not_implemented | No implementation evidence was found |
 | implemented | Implemented and proof exists |
 | changed | Contract changed after earlier implementation |
 | retired | No longer part of the product contract |

@@ -21,7 +21,7 @@ during onboarding.
 | confirmed | Found in code, tests, existing docs, or human-provided material |
 | partial | Partly implemented, weakly proven, or missing an important path |
 | unknown | Not enough evidence to make a claim |
-| not implemented | No implementation evidence found |
+| not implemented | No implementation evidence found. Use `not_implemented` in the durable matrix/CLI status field. |
 
 ## Recommended Outputs
 

@@ -1068,6 +1068,9 @@ fn normalize_story_status(value: &str) -> String {
     match normalize_token(value).as_str() {
         "planned" => "planned",
         "in_progress" => "in_progress",
+        "partial" => "partial",
+        "unknown" => "unknown",
+        "not_implemented" => "not_implemented",
         "implemented" => "implemented",
         "changed" => "changed",
         "retired" => "retired",
@@ -1243,7 +1246,7 @@ mod tests {
         assert_eq!(repository.query_stats().unwrap().intakes, 0);
         let connection = repository.open_existing().unwrap();
         let schema_version = SqliteHarnessRepository::schema_version(&connection).unwrap();
-        assert_eq!(schema_version, 2);
+        assert_eq!(schema_version, 3);
         let story_columns = story_columns(&connection);
         assert!(story_columns.contains(&"verify_command".to_owned()));
         assert!(story_columns.contains(&"last_verified_at".to_owned()));
@@ -1260,16 +1263,51 @@ mod tests {
         let result = repository.migrate().unwrap();
 
         assert_eq!(result.current_version, 1);
-        assert_eq!(result.applied, vec![2]);
+        assert_eq!(result.applied, vec![2, 3]);
         let connection = repository.open_existing().unwrap();
         assert_eq!(
             SqliteHarnessRepository::schema_version(&connection).unwrap(),
-            2
+            3
         );
         let story_columns = story_columns(&connection);
         assert!(story_columns.contains(&"verify_command".to_owned()));
         assert!(story_columns.contains(&"last_verified_at".to_owned()));
         assert!(story_columns.contains(&"last_verified_result".to_owned()));
+        drop(connection);
+
+        repository
+            .record_intake(IntakeInput {
+                input_type: InputType::ExistingProjectOnboarding,
+                summary: "Migrate existing onboarding".to_owned(),
+                risk_lane: RiskLane::HighRisk,
+                risk_flags: CsvList::from_optional(None),
+                affected_docs: CsvList::from_optional(None),
+                story_id: None,
+                notes: None,
+            })
+            .unwrap();
+        repository
+            .add_story(StoryAddInput {
+                id: "US-MIGRATE".to_owned(),
+                title: "Migrated status support".to_owned(),
+                risk_lane: RiskLane::Normal,
+                contract_doc: None,
+                verify_command: None,
+                notes: None,
+            })
+            .unwrap();
+        repository
+            .update_story(StoryUpdateInput {
+                id: "US-MIGRATE".to_owned(),
+                status: Some("partial".to_owned()),
+                evidence: None,
+                unit: None,
+                integration: None,
+                e2e: None,
+                platform: None,
+                verify_command: None,
+            })
+            .unwrap();
     }
 
     #[test]
@@ -1304,6 +1342,32 @@ mod tests {
             )
             .unwrap();
         assert_eq!(missing_lists_are_null, (false, true));
+    }
+
+    #[test]
+    fn records_existing_project_onboarding_intake() {
+        let (_temp_dir, repository) = test_repository();
+        repository.init().unwrap();
+
+        repository
+            .record_intake(IntakeInput {
+                input_type: InputType::ExistingProjectOnboarding,
+                summary: "Onboard existing repo".to_owned(),
+                risk_lane: RiskLane::HighRisk,
+                risk_flags: CsvList::from_optional(Some("docs,architecture".to_owned())),
+                affected_docs: CsvList::from_optional(Some(
+                    "docs/onboarding/baseline-audit.md".to_owned(),
+                )),
+                story_id: None,
+                notes: Some("Create truthful baseline before implementation.".to_owned()),
+            })
+            .unwrap();
+
+        let intakes = repository.query_intakes().unwrap();
+
+        assert_eq!(intakes.len(), 1);
+        assert_eq!(intakes[0].input_type, "existing_project_onboarding");
+        assert_eq!(intakes[0].risk_lane, "high_risk");
     }
 
     #[test]
@@ -1779,6 +1843,51 @@ implemented
             .any(|item| item.title == "Keep installer checksum"
                 && item.status == "implemented"
                 && item.risk.as_deref() == Some("high_risk")));
+    }
+
+    #[test]
+    fn import_brownfield_preserves_onboarding_matrix_statuses() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let repo_root = temp_dir.path().join("repo");
+        fs::create_dir_all(repo_root.join("docs/harness")).unwrap();
+        fs::create_dir_all(repo_root.join("docs/validation")).unwrap();
+        fs::write(
+            repo_root.join("docs/validation/test-matrix.md"),
+            r#"# Test Matrix
+
+| Story | Contract | Unit | Integration | E2E | Platform | Status | Evidence |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| US-001 | docs/product/auth.md | no | no | no | no | partial | route exists without proof |
+| US-002 | docs/product/billing.md | no | no | no | no | unknown | mentioned in stale docs |
+| US-003 | docs/product/refunds.md | no | no | no | no | not implemented | no code path found |
+"#,
+        )
+        .unwrap();
+        fs::write(
+            repo_root.join("docs/harness/HARNESS_BACKLOG.md"),
+            "# Backlog\n",
+        )
+        .unwrap();
+
+        let source_repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .ancestors()
+            .nth(2)
+            .unwrap()
+            .to_path_buf();
+        let repository = SqliteHarnessRepository::new(
+            repo_root,
+            temp_dir.path().join("harness.db"),
+            source_repo_root.join("scripts/schema"),
+        );
+        repository.init().unwrap();
+
+        let result = repository.import_brownfield().unwrap();
+        let matrix = repository.query_matrix().unwrap();
+
+        assert_eq!(result.stories, 3);
+        assert_eq!(matrix[0].status, "partial");
+        assert_eq!(matrix[1].status, "unknown");
+        assert_eq!(matrix[2].status, "not_implemented");
     }
 
     #[test]
