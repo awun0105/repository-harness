@@ -64,63 +64,54 @@ agents execute:
 
 https://openai.com/index/harness-engineering/
 
-## Install Harness Into A Project
+## Install Project Harness Into A Project
 
-From a target project directory, run:
+Most existing projects should start with the process layer only:
 
 ```bash
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --yes
+curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout harness-only --merge --yes
 ```
 
-On Windows PowerShell, run:
+On Windows PowerShell:
 
 ```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.ps1"))) -Yes
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout harness-only -Merge -Yes
 ```
 
-If the target already has `AGENTS.md`, `docs/`, or `scripts/`, choose one:
+`harness-only` installs `AGENTS.md`, `docs/harness/`, reusable templates,
+`docs/validation/`, scripts, and `.gitignore` rules. It avoids creating
+product, architecture, requirements, planning, story, and decision docs before
+the existing codebase has been audited.
+
+After installing into an existing repo, run the onboarding workflow in:
+
+```text
+docs/harness/ONBOARDING_EXISTING_PROJECT.md
+```
+
+Use the full project layout for a new repo or a repo you intentionally want to
+convert into the complete Project Harness source-of-truth structure:
 
 ```bash
-# Update an existing Harness repo without moving existing files
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --merge --yes
-
-# Back up and replace AGENTS.md, docs/, and scripts/
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --override --yes
+curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout project --yes
 ```
 
 ```powershell
-# Update an existing Harness repo without moving existing files
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.ps1"))) -Merge -Yes
-
-# Back up and replace AGENTS.md, docs/, and scripts/
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.ps1"))) -Override -Yes
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout project -Yes
 ```
 
-Use `--merge` when a project already has Harness and you want to append newly
-added Harness files without moving the existing `AGENTS.md`, `docs/`, or
-`scripts/` paths into backup. Existing files stay untouched; only missing
-Harness files are created.
+If the target already has `AGENTS.md`, `docs/`, or `scripts/`, choose a conflict
+mode:
 
-Choose the installed documentation layout:
-
-```bash
-# Full Project Harness layout for a new or intentionally converted repo
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout project --yes
-
-# Process layer only for an existing repo that needs a baseline audit first
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout harness-only --merge --yes
-```
-
-Use `--layout harness-only` when an existing project already has product,
-architecture, requirements, planning, or user-facing docs. It installs
-`AGENTS.md`, `docs/harness/`, reusable templates, validation entrypoints, and
-scripts without creating project-truth placeholder folders.
+- `--merge`: keep existing files and create only missing Project Harness files.
+- `--override`: back up and replace `AGENTS.md`, `docs/`, and `scripts/`.
+- default interactive mode: ask before continuing.
 
 For older Harness installs whose `AGENTS.md` still contains the full generated
 operating guide, refresh it into the small stable shim:
 
 ```bash
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --merge --refresh-agent-shim --yes
+curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --merge --refresh-agent-shim --yes
 ```
 
 The refresh backs up the existing file. If it detects the old
@@ -136,17 +127,17 @@ session's context. An existing `CLAUDE.md` gets the block appended after a
 backup; plain installs without the flag never touch `CLAUDE.md`:
 
 ```bash
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --claude --yes
+curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --claude --yes
 ```
 
 Or install into a specific path:
 
 ```bash
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --directory /path/to/project --yes
+curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --directory /path/to/project --yes
 ```
 
 ```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.ps1"))) -Directory C:\path\to\project -Yes
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Directory C:\path\to\project -Yes
 ```
 
 Use `--dry-run` on Bash or `-DryRun` on PowerShell to preview changes before

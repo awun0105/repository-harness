@@ -5,7 +5,7 @@ use thiserror::Error;
 
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum ParseHarnessValueError {
-    #[error("unknown intake type '{0}'. Use: new spec, spec slice, change request, new initiative, maintenance request, or harness improvement")]
+    #[error("unknown intake type '{0}'. Use: new spec, existing project onboarding, spec slice, change request, new initiative, maintenance request, or harness improvement")]
     InputType(String),
     #[error("unknown lane '{0}'. Use: tiny, normal, or high-risk. Use tiny instead of low.")]
     RiskLane(String),
@@ -18,6 +18,7 @@ pub enum ParseHarnessValueError {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum InputType {
     NewSpec,
+    ExistingProjectOnboarding,
     SpecSlice,
     ChangeRequest,
     NewInitiative,
@@ -29,6 +30,7 @@ impl InputType {
     pub fn as_db_value(&self) -> &'static str {
         match self {
             Self::NewSpec => "new_spec",
+            Self::ExistingProjectOnboarding => "existing_project_onboarding",
             Self::SpecSlice => "spec_slice",
             Self::ChangeRequest => "change_request",
             Self::NewInitiative => "new_initiative",
@@ -45,6 +47,9 @@ impl FromStr for InputType {
         let normalized = normalize_token(value);
         match normalized.as_str() {
             "new_spec" => Ok(Self::NewSpec),
+            "existing_project_onboarding" | "project_onboarding" | "onboarding" => {
+                Ok(Self::ExistingProjectOnboarding)
+            }
             "spec_slice" => Ok(Self::SpecSlice),
             "change_request" => Ok(Self::ChangeRequest),
             "new_initiative" => Ok(Self::NewInitiative),
@@ -460,6 +465,10 @@ mod tests {
         assert_eq!(
             "Harness improvement".parse::<InputType>().unwrap(),
             InputType::HarnessImprovement
+        );
+        assert_eq!(
+            "existing project onboarding".parse::<InputType>().unwrap(),
+            InputType::ExistingProjectOnboarding
         );
     }
 
