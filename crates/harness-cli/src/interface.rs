@@ -13,7 +13,8 @@ use crate::application::{
 use crate::domain::{
     parse_optional_integer, proof_display, BacklogFilter, BacklogRecord, BoolFlag, CsvList,
     DecisionRecord, FrictionRecord, HarnessStats, InputType, IntakeRecord, RiskLane,
-    StoryMatrixRecord, TraceQualityTier, TraceRecord, TraceScoreResult, RISK_LANE_HELP,
+    StoryMatrixRecord, TemplateEntry, TemplateScaffoldResult, TraceQualityTier, TraceRecord,
+    TraceScoreResult, RISK_LANE_HELP,
 };
 
 #[derive(Parser, Debug)]
@@ -33,6 +34,10 @@ enum Command {
     Migrate,
     /// Seed or refresh the database from existing markdown state.
     Import(ImportArgs),
+    /// List registered documentation templates.
+    Template(TemplateArgs),
+    /// Copy a registered template to its default output or an explicit path.
+    Scaffold(ScaffoldArgs),
     /// Record a feature intake classification.
     Intake(IntakeArgs),
     /// Add or update a story.
@@ -78,6 +83,30 @@ struct ImportArgs {
 enum ImportSource {
     /// Import TEST_MATRIX, decisions, and backlog markdown.
     Brownfield,
+}
+
+#[derive(Args, Debug)]
+struct TemplateArgs {
+    #[command(subcommand)]
+    action: TemplateAction,
+}
+
+#[derive(Subcommand, Debug)]
+enum TemplateAction {
+    /// List templates from docs/harness/templates/manifest.yml.
+    List,
+}
+
+#[derive(Args, Debug)]
+struct ScaffoldArgs {
+    /// Template id from `harness-cli template list`.
+    template_id: String,
+    /// Output path. Required when the template only has a default output pattern.
+    #[arg(long)]
+    output: Option<String>,
+    /// Overwrite the output path if it already exists.
+    #[arg(long)]
+    force: bool,
 }
 
 #[derive(Args, Debug)]
@@ -315,6 +344,13 @@ pub fn run(cli: Cli) -> Result<(), InterfaceError> {
                 print_brownfield_import_result(service.import_brownfield()?)
             }
         },
+        Command::Template(args) => match args.action {
+            TemplateAction::List => print_template_list(&service.list_templates()?),
+        },
+        Command::Scaffold(args) => {
+            let result = service.scaffold_template(&args.template_id, args.output, args.force)?;
+            print_scaffold_result(&result);
+        }
         Command::Intake(args) => {
             let id = service.record_intake(IntakeInput {
                 input_type: InputType::from_str(&args.input_type)?,
@@ -569,6 +605,44 @@ fn print_brownfield_import_result(result: BrownfieldImportResult) {
     println!("Stories imported or updated: {}", result.stories);
     println!("Decisions imported or updated: {}", result.decisions);
     println!("Backlog items discovered: {}", result.backlog_items);
+}
+
+fn print_template_list(records: &[TemplateEntry]) {
+    let rows = records
+        .iter()
+        .map(|record| {
+            vec![
+                record.id.clone(),
+                record.template.clone(),
+                record
+                    .default_output
+                    .clone()
+                    .or_else(|| record.default_output_pattern.clone())
+                    .unwrap_or_default(),
+                record.description.clone().unwrap_or_default(),
+                record.requires_review.to_string(),
+            ]
+        })
+        .collect::<Vec<_>>();
+    print_table(
+        &["id", "template", "default_output", "description", "review"],
+        &rows,
+    );
+}
+
+fn print_scaffold_result(result: &TemplateScaffoldResult) {
+    if result.overwritten {
+        println!(
+            "Template '{}' copied to {} (overwritten).",
+            result.template_id, result.output_path
+        );
+    } else {
+        println!(
+            "Template '{}' copied to {}.",
+            result.template_id, result.output_path
+        );
+    }
+    println!("Source: {}", result.template_path);
 }
 
 fn parse_optional_bool(
@@ -913,5 +987,22 @@ mod tests {
             .render_long_help()
             .to_string();
         assert!(matrix_help.contains("--numeric"));
+
+        let template_help = command
+            .find_subcommand_mut("template")
+            .unwrap()
+            .find_subcommand_mut("list")
+            .unwrap()
+            .render_long_help()
+            .to_string();
+        assert!(template_help.contains("manifest.yml"));
+
+        let scaffold_help = command
+            .find_subcommand_mut("scaffold")
+            .unwrap()
+            .render_long_help()
+            .to_string();
+        assert!(scaffold_help.contains("--output"));
+        assert!(scaffold_help.contains("--force"));
     }
 }

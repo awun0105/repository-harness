@@ -213,6 +213,14 @@ This repo uses Harness. Before work, read:
 - `docs/harness/CONTEXT_RULES.md`
 - `scripts/bin/harness-cli query matrix`
 
+Before creating, normalizing, or syncing documentation, also read:
+
+- `docs/harness/TEMPLATE_REGISTRY.md`
+
+Use registered templates from `docs/harness/templates/`. Do not invent a
+documentation format when a registered template exists. Do not overwrite
+existing project docs during onboarding without a doc sync plan.
+
 Use the Rust Harness CLI at `scripts/bin/harness-cli` as the main operational
 tool. If the CLI binary is unavailable in a checkout, read
 `docs/validation/test-matrix.md` directly and state that the durable matrix
@@ -234,6 +242,9 @@ context-load time. Never wrap them in backticks; that disables the import.
 @AGENTS.md
 
 @docs/harness/FEATURE_INTAKE.md
+
+Before creating, normalizing, or syncing documentation, also read
+`docs/harness/TEMPLATE_REGISTRY.md` and use registered templates.
 
 Also run `scripts/bin/harness-cli query matrix` before starting work.
 If the binary is unavailable, read `docs/validation/test-matrix.md` directly
@@ -519,7 +530,7 @@ read_cli_release_tag() {
 
 default_cli_base_url() {
   local release_tag="${HARNESS_CLI_RELEASE_TAG:-}"
-  local default_release_tag="harness-cli-v0.1.12-project-harness"
+  local default_release_tag="harness-cli-v0.1.13-project-harness"
 
   if [ -z "$release_tag" ]; then
     release_tag="$(read_cli_release_tag)"
@@ -858,52 +869,56 @@ docs/harness/HARNESS_BACKLOG.md
 docs/harness/HARNESS_COMPONENTS.md
 docs/harness/HARNESS_MATURITY.md
 docs/harness/ONBOARDING_EXISTING_PROJECT.md
+docs/harness/TEMPLATE_REGISTRY.md
 docs/harness/TRACE_SPEC.md
-docs/harness/templates/baseline-audit.md
-docs/harness/templates/decision.md
-docs/harness/templates/doc-conflict.md
-docs/harness/templates/spec-intake.md
-docs/harness/templates/story.md
-docs/harness/templates/validation-report.md
-docs/harness/templates/high-risk-story/design.md
-docs/harness/templates/high-risk-story/execplan.md
-docs/harness/templates/high-risk-story/overview.md
-docs/harness/templates/high-risk-story/validation.md
-docs/harness/templates/readme-suite/README.md
-docs/harness/templates/readme-suite/README_TEMPLATE.md
-docs/harness/templates/readme-suite/README_VN.md
-docs/harness/templates/readme-suite/README_VN_TEMPLATE.md
-docs/harness/templates/readme-suite/docs/README.md
-docs/harness/templates/readme-suite/docs/EN/README.md
-docs/harness/templates/readme-suite/docs/EN/api.md
-docs/harness/templates/readme-suite/docs/EN/architecture.md
-docs/harness/templates/readme-suite/docs/EN/configuration.md
-docs/harness/templates/readme-suite/docs/EN/data-flow.md
-docs/harness/templates/readme-suite/docs/EN/deployment/backup-restore.md
-docs/harness/templates/readme-suite/docs/EN/deployment/setup.md
-docs/harness/templates/readme-suite/docs/EN/evaluation.md
-docs/harness/templates/readme-suite/docs/EN/local-development.md
-docs/harness/templates/readme-suite/docs/EN/operations.md
-docs/harness/templates/readme-suite/docs/EN/overview.md
-docs/harness/templates/readme-suite/docs/EN/scripts.md
-docs/harness/templates/readme-suite/docs/VN/README.md
-docs/harness/templates/readme-suite/docs/VN/api.md
-docs/harness/templates/readme-suite/docs/VN/architecture.md
-docs/harness/templates/readme-suite/docs/VN/configuration.md
-docs/harness/templates/readme-suite/docs/VN/data-flow.md
-docs/harness/templates/readme-suite/docs/VN/deployment/backup-restore.md
-docs/harness/templates/readme-suite/docs/VN/deployment/setup.md
-docs/harness/templates/readme-suite/docs/VN/evaluation.md
-docs/harness/templates/readme-suite/docs/VN/local-development.md
-docs/harness/templates/readme-suite/docs/VN/operations.md
-docs/harness/templates/readme-suite/docs/VN/overview.md
-docs/harness/templates/readme-suite/docs/VN/scripts.md
+docs/harness/templates/decisions/decision.md
+docs/harness/templates/manifest.yml
+docs/harness/templates/docs-suite/README.md
+docs/harness/templates/docs-suite/EN/README.md
+docs/harness/templates/docs-suite/EN/api.md
+docs/harness/templates/docs-suite/EN/architecture.md
+docs/harness/templates/docs-suite/EN/configuration.md
+docs/harness/templates/docs-suite/EN/data-flow.md
+docs/harness/templates/docs-suite/EN/deployment/backup-restore.md
+docs/harness/templates/docs-suite/EN/deployment/setup.md
+docs/harness/templates/docs-suite/EN/evaluation.md
+docs/harness/templates/docs-suite/EN/local-development.md
+docs/harness/templates/docs-suite/EN/operations.md
+docs/harness/templates/docs-suite/EN/overview.md
+docs/harness/templates/docs-suite/EN/scripts.md
+docs/harness/templates/docs-suite/VN/README.md
+docs/harness/templates/docs-suite/VN/api.md
+docs/harness/templates/docs-suite/VN/architecture.md
+docs/harness/templates/docs-suite/VN/configuration.md
+docs/harness/templates/docs-suite/VN/data-flow.md
+docs/harness/templates/docs-suite/VN/deployment/backup-restore.md
+docs/harness/templates/docs-suite/VN/deployment/setup.md
+docs/harness/templates/docs-suite/VN/evaluation.md
+docs/harness/templates/docs-suite/VN/local-development.md
+docs/harness/templates/docs-suite/VN/operations.md
+docs/harness/templates/docs-suite/VN/overview.md
+docs/harness/templates/docs-suite/VN/scripts.md
+docs/harness/templates/intake/spec-intake.md
+docs/harness/templates/onboarding/baseline-audit.md
+docs/harness/templates/onboarding/doc-conflict.md
+docs/harness/templates/onboarding/doc-sync-plan.md
+docs/harness/templates/onboarding/source-inventory.md
+docs/harness/templates/readme/README_TEMPLATE.md
+docs/harness/templates/readme/README_VN_TEMPLATE.md
+docs/harness/templates/requirements/srds.md
+docs/harness/templates/stories/story.md
+docs/harness/templates/stories/high-risk/design.md
+docs/harness/templates/stories/high-risk/execplan.md
+docs/harness/templates/stories/high-risk/overview.md
+docs/harness/templates/stories/high-risk/validation.md
+docs/harness/templates/validation/validation-report.md
 docs/README.md
 docs/validation/README.md
 docs/validation/test-matrix.md
 scripts/README.md
 scripts/schema/001-init.sql
 scripts/schema/002-story-verify.sql
+scripts/schema/003-onboarding-statuses.sql
 .gitignore
 EOF
 

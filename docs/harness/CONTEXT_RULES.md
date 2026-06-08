@@ -19,6 +19,7 @@ Read to classify the request, find the affected surface, and choose a lane.
 | `scripts/bin/harness-cli query matrix` | Must | Must | Must |
 | `README.md` | Should | Must | Must |
 | `docs/harness/HARNESS.md` | Should | Must | Must |
+| `docs/harness/TEMPLATE_REGISTRY.md` | Must if creating or syncing docs | Must if creating or syncing docs | Must if creating or syncing docs |
 | `docs/architecture/overview.md` | Skip | Should | Must |
 | Relevant `docs/product/*` | Skip if unrelated | Must if product behavior changes | Must |
 | Relevant `docs/stories/*` | Skip if unrelated | Must if a story exists | Must |
@@ -32,8 +33,9 @@ Read to decide the smallest safe approach and expected proof.
 | Document Or Source | Tiny | Normal | High-Risk |
 | --- | --- | --- | --- |
 | Current files to edit | Must | Must | Must |
-| `docs/harness/templates/story.md` | Skip | Must when creating/updating a story | Should |
-| `docs/harness/templates/high-risk-story/*` | Skip | Skip unless risk escalates | Must |
+| `docs/harness/TEMPLATE_REGISTRY.md` | Must if creating or syncing docs | Must if creating or syncing docs | Must if creating or syncing docs |
+| `docs/harness/templates/stories/story.md` | Skip | Must when creating/updating a story | Should |
+| `docs/harness/templates/stories/high-risk/*` | Skip | Skip unless risk escalates | Must |
 | `docs/architecture/overview.md` | Skip | Should for code or boundary changes | Must |
 | `docs/validation/test-matrix.md` or `scripts/bin/harness-cli query matrix` | Should | Must | Must |
 | Relevant decisions | Skip | Should | Must |
@@ -51,7 +53,7 @@ affect the selected story.
 | Adjacent files with same pattern | Should | Must | Must |
 | Relevant product docs | Skip if copy-only | Must if behavior changes | Must |
 | Relevant story packet | Skip if no story needed | Must | Must |
-| Relevant templates | Skip | Should when adding docs | Must |
+| Relevant registered templates | Skip | Should when adding docs | Must |
 | `docs/architecture/overview.md` | Skip | Should for structural changes | Must |
 | Provider/API/security docs | Skip | Should if touched | Must |
 | Unrelated docs and historical traces | Skip | Skip | Should only if they affect decisions |
@@ -65,7 +67,7 @@ Read to prove the change and avoid claiming unsupported completion.
 | Story acceptance criteria | Should | Must | Must |
 | `docs/validation/test-matrix.md` or `scripts/bin/harness-cli query matrix` | Should | Must | Must |
 | Validation section of story packet | Skip if no story | Must | Must |
-| `docs/harness/templates/validation-report.md` | Skip | Should for notable proof | Must for high-risk proof |
+| `docs/harness/templates/validation/validation-report.md` | Skip | Should for notable proof | Must for high-risk proof |
 | Relevant commands from README/package docs | Should | Must | Must |
 | Benchmark protocol or external benchmark repo | Skip | Skip unless requested | Must if the story depends on benchmark proof |
 | `docs/harness/HARNESS_MATURITY.md` | Skip | Should for Harness improvements | Must for maturity claims |
@@ -90,9 +92,10 @@ Read to leave useful evidence for the next agent and for benchmark scoring.
 | --- | --- |
 | Task touches database schema, durable records, or migrations | Read `docs/decisions/0004-sqlite-durable-layer.md`, `scripts/schema/`, and relevant CLI code before planning. |
 | Task touches CLI command behavior or installer distribution | Read `docs/decisions/0005-prebuilt-rust-harness-cli.md`, `scripts/README.md`, relevant `crates/harness-cli/*` code, CLI help output, and installer docs. |
-| Task touches auth, authorization, audit/security, data loss, or external providers | Treat as high-risk, read `docs/harness/templates/high-risk-story/*`, and check prior decisions before implementation. |
+| Task touches auth, authorization, audit/security, data loss, or external providers | Treat as high-risk, read `docs/harness/templates/stories/high-risk/*`, and check prior decisions before implementation. |
 | Task changes public API shape, product behavior, or user-visible workflow | Read relevant `docs/product/*`, story packets, and validation expectations before editing. |
 | Task changes Harness policy, source hierarchy, risk classification, or validation requirements | Read `docs/harness/HARNESS.md`, `docs/harness/FEATURE_INTAKE.md`, `docs/architecture/overview.md`, and `docs/decisions/*`; pause if direction is ambiguous. |
+| Task creates, normalizes, or syncs documentation | Read `docs/harness/TEMPLATE_REGISTRY.md`, then use registered templates from `docs/harness/templates/`; for existing-project onboarding, create a source inventory and doc sync plan before rewriting docs. |
 | Task discovers repeated confusion, stale docs, or missing proof | Read `docs/harness/HARNESS_BACKLOG.md`, record `harness_friction`, and add a backlog item when the fix is out of scope. |
 | Task makes a maturity, observability, trace quality, or benchmark claim | Read `docs/harness/HARNESS_COMPONENTS.md`, `docs/harness/HARNESS_MATURITY.md`, and `docs/harness/TRACE_SPEC.md`. |
 | Task is normal or high-risk and spans multiple iterations | Create or update a story/progress file under `docs/stories/` and keep it current. |

@@ -350,6 +350,24 @@ pub struct HarnessStats {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TemplateEntry {
+    pub id: String,
+    pub template: String,
+    pub default_output: Option<String>,
+    pub default_output_pattern: Option<String>,
+    pub description: Option<String>,
+    pub requires_review: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TemplateScaffoldResult {
+    pub template_id: String,
+    pub template_path: String,
+    pub output_path: String,
+    pub overwritten: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CsvList(pub Option<String>);
 
 impl CsvList {

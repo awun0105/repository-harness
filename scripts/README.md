@@ -55,6 +55,9 @@ Current migrated commands:
 scripts/bin/harness-cli init
 scripts/bin/harness-cli migrate
 scripts/bin/harness-cli import brownfield
+scripts/bin/harness-cli template list
+scripts/bin/harness-cli scaffold source_inventory
+scripts/bin/harness-cli scaffold product_domain --output docs/product/tasks.md
 scripts/bin/harness-cli intake ...
 scripts/bin/harness-cli story add ...
 scripts/bin/harness-cli story update ...
@@ -80,6 +83,14 @@ from existing Harness v0 markdown in `docs/validation/test-matrix.md`,
 `docs/decisions/`, and `docs/harness/HARNESS_BACKLOG.md`. This keeps already-installed
 Harness repos on the Rust CLI path without losing their populated operating
 docs.
+
+`scripts/bin/harness-cli template list` reads
+`docs/harness/templates/manifest.yml` and shows the registered documentation
+templates. `scripts/bin/harness-cli scaffold <template-id>` copies a registered
+template to its default output path. Pass `--output <path>` for pattern-based
+templates such as `product_domain`, and pass `--force` only when overwriting is
+intentional. Scaffolded files are blank structure; agents and humans must fill
+them from spec, code, tests, existing docs, or explicit human input.
 
 ## Installer
 

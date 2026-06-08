@@ -50,6 +50,26 @@ When onboarding an existing project, do not treat empty or generated docs as
 truth. Follow `docs/harness/ONBOARDING_EXISTING_PROJECT.md` and label findings
 as `confirmed`, `partial`, `unknown`, or `not implemented`.
 
+## Template Usage
+
+When work creates, normalizes, or syncs documentation:
+
+1. Read `docs/harness/TEMPLATE_REGISTRY.md`.
+2. Select the registered template for each document type.
+3. Create only documents justified by a spec, existing code, existing docs,
+   explicit human request, or the onboarding workflow.
+4. Do not create placeholder product domains just to fill the structure.
+5. Mark assumptions, conflicts, and open questions clearly.
+6. During existing-project onboarding, create a source inventory and doc sync
+   plan before modifying or replacing existing docs.
+
+For a new spec, use the registry to create draft docs, then treat human review
+or confirmation as the point where those docs become accepted source of truth.
+
+For existing-project onboarding, use existing docs, code, tests, and config as
+evidence; inventory them, map them to registered templates, create a sync plan,
+and only then generate normalized docs.
+
 ## Lanes
 
 ### Tiny
@@ -76,7 +96,7 @@ Use for story-sized behavior with bounded blast radius.
 
 Requirements:
 
-- Create or update one story file from `docs/harness/templates/story.md`.
+- Create or update one story file from `docs/harness/templates/stories/story.md`.
 - Link relevant product docs.
 - Add or update validation expectations.
 - Implement the smallest vertical slice when implementation exists.
@@ -90,12 +110,12 @@ roles/platforms.
 
 Requirements:
 
-- Create a story folder using `docs/harness/templates/high-risk-story/`.
+- Create a story folder using `docs/harness/templates/stories/high-risk/`.
 - Fill in `execplan.md`, `overview.md`, `design.md`, and `validation.md`.
 - Ask for human confirmation before implementation if direction is ambiguous.
 - Record a durable decision when behavior, architecture, authorization, data
   ownership, API shape, or validation requirements change meaningfully. Use a
-  `docs/decisions/NNNN-*.md` file from `docs/harness/templates/decision.md`, then add
+  `docs/decisions/NNNN-*.md` file from `docs/harness/templates/decisions/decision.md`, then add
   or refresh the durable row with `scripts/bin/harness-cli decision add`.
   Decision text in a trace is not a durable decision record.
 

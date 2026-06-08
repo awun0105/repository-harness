@@ -60,9 +60,9 @@ Required files:
 - `docs/harness/FEATURE_INTAKE.md`
 - `docs/architecture/overview.md`
 - `docs/validation/test-matrix.md`
-- `docs/harness/templates/story.md`
-- `docs/harness/templates/decision.md`
-- `docs/harness/templates/validation-report.md`
+- `docs/harness/templates/stories/story.md`
+- `docs/harness/templates/decisions/decision.md`
+- `docs/harness/templates/validation/validation-report.md`
 
 Benchmark indicators:
 

@@ -22,6 +22,22 @@ docs/
   harness/       agent operating rules, process docs, and templates
 ```
 
+## Canonical Docs
+
+The canonical project docs are the accepted files under:
+
+- `docs/product/`
+- `docs/requirements/`
+- `docs/architecture/`
+- `docs/planning/`
+- `docs/decisions/`
+- `docs/validation/`
+
+Older or imported source materials may live in place during onboarding or be
+preserved under `docs/onboarding/source-material/` after human review. When
+normalizing existing docs, use `docs/harness/TEMPLATE_REGISTRY.md` and
+`docs/onboarding/doc-sync-plan.md`.
+
 ## Reading Paths
 
 ### Human: Understand The Project
@@ -46,7 +62,9 @@ docs/
 
 Use `docs/harness/ONBOARDING_EXISTING_PROJECT.md` when Project Harness is added
 to a repo that already has code. The first task should audit the current repo
-and write baseline docs before treating generated docs as truth.
+and write baseline docs before treating generated docs as truth. When existing
+docs are present, create `docs/onboarding/source-inventory.md` and
+`docs/onboarding/doc-sync-plan.md` before normalizing or replacing them.
 
 ## Freshness Rule
 
@@ -59,5 +77,5 @@ Record the conflict, cite evidence, and mark the state as one of:
 - `unknown`: not enough evidence
 - `not implemented`: no evidence found
 
-Use `docs/harness/templates/doc-conflict.md` when the conflict needs to be kept
-for follow-up.
+Use `docs/harness/templates/onboarding/doc-conflict.md` when the conflict needs
+to be kept for follow-up.

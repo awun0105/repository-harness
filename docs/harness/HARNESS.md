@@ -95,6 +95,16 @@ should use that binary for Harness work. The database is local to each project
 instance and `.gitignore`d. The schema is version-controlled under
 `scripts/schema/`.
 
+The CLI also exposes lightweight template utilities:
+
+```bash
+scripts/bin/harness-cli template list
+scripts/bin/harness-cli scaffold source_inventory
+```
+
+These commands list and copy registered documentation templates. They do not
+audit a codebase or generate accepted project truth.
+
 This separation keeps policy docs stable and human-readable while giving agents
 a structured, queryable record of operational state. It also prepares the
 harness for future observability and automated evolution without adding more
@@ -151,6 +161,20 @@ docs/decisions/*
 
 Before implementation, product docs describe intent. After implementation,
 product docs plus executable tests become the living contract.
+
+## Template Layer
+
+Templates standardize project docs, but template text is not source of truth by
+itself.
+
+Use `docs/harness/TEMPLATE_REGISTRY.md` before creating, normalizing, or syncing
+documentation. The registry maps each document type to an approved template,
+default output path, and review expectation. The machine-readable companion is
+`docs/harness/templates/manifest.yml`.
+
+For existing projects, templates are applied only after source inventory and a
+doc sync plan. Existing docs, code, tests, and config are evidence; they are not
+silently overwritten or promoted to canonical truth.
 
 ## Spec Lifecycle
 
@@ -282,7 +306,7 @@ For auth, authorization, data ownership, API shape, audit/security, or
 validation changes, record the decision in both places:
 
 1. Add a markdown file under `docs/decisions/` from
-   `docs/harness/templates/decision.md`.
+   `docs/harness/templates/decisions/decision.md`.
 2. Add or refresh the durable record:
 
 ```bash

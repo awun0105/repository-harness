@@ -21,11 +21,14 @@ during onboarding.
 | confirmed | Found in code, tests, existing docs, or human-provided material |
 | partial | Partly implemented, weakly proven, or missing an important path |
 | unknown | Not enough evidence to make a claim |
-| not implemented | No implementation evidence found |
+| not implemented | No implementation evidence found. Use `not_implemented` in the durable matrix/CLI status field. |
 
 ## Recommended Outputs
 
+- `docs/onboarding/source-inventory.md`
+- `docs/onboarding/doc-sync-plan.md`
 - `docs/onboarding/baseline-audit.md`
+- `docs/onboarding/doc-conflicts.md`
 - `docs/product/current-state.md`
 - `docs/architecture/overview.md`
 - `docs/validation/test-matrix.md`
@@ -34,15 +37,23 @@ during onboarding.
 
 ## Audit Flow
 
-1. Read `README.md`, package/build files, source entrypoints, routes, schemas,
-   tests, deployment files, and existing docs.
-2. List confirmed, partial, unknown, and not implemented behavior.
-3. Create or update current-state product docs.
-4. Create or update architecture docs from code evidence.
-5. Update validation expectations with real test/proof evidence.
-6. Add backlog items or stories for gaps instead of fixing everything at once.
-7. Record decision files only for meaningful choices that are visible or
+1. Read `docs/harness/TEMPLATE_REGISTRY.md`.
+2. Inventory existing docs, README files, package/build files, source
+   entrypoints, routes, schemas, tests, deployment files, and existing docs.
+3. Create `docs/onboarding/source-inventory.md` from
+   `docs/harness/templates/onboarding/source-inventory.md`.
+4. Map existing docs to registered templates.
+5. Create `docs/onboarding/doc-sync-plan.md` from
+   `docs/harness/templates/onboarding/doc-sync-plan.md`.
+6. List confirmed, partial, unknown, and not implemented behavior.
+7. Create or update current-state product docs from cited evidence.
+8. Create or update architecture docs from code evidence.
+9. Update validation expectations with real test/proof evidence.
+10. Add backlog items or stories for gaps instead of fixing everything at once.
+11. Record decision files only for meaningful choices that are visible or
    human-confirmed.
+12. Do not overwrite or archive old docs unless the sync plan explains how
+    useful source material is preserved.
 
 ## Stop Conditions
 

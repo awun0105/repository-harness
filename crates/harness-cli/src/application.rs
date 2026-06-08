@@ -2,8 +2,8 @@ use std::path::PathBuf;
 
 use crate::domain::{
     BacklogFilter, BacklogRecord, BoolFlag, CsvList, DecisionRecord, FrictionRecord, HarnessStats,
-    InputType, IntakeRecord, RiskLane, StoryMatrixRecord, StoryVerifyStatus, TraceRecord,
-    TraceScoreResult,
+    InputType, IntakeRecord, RiskLane, StoryMatrixRecord, StoryVerifyStatus, TemplateEntry,
+    TemplateScaffoldResult, TraceRecord, TraceScoreResult,
 };
 use crate::infrastructure::{HarnessRepository, SqliteHarnessRepository};
 
@@ -119,6 +119,20 @@ impl HarnessService {
 
     pub fn import_brownfield(&self) -> crate::infrastructure::Result<BrownfieldImportResult> {
         self.repository.import_brownfield()
+    }
+
+    pub fn list_templates(&self) -> crate::infrastructure::Result<Vec<TemplateEntry>> {
+        self.repository.list_templates()
+    }
+
+    pub fn scaffold_template(
+        &self,
+        template_id: &str,
+        output: Option<String>,
+        force: bool,
+    ) -> crate::infrastructure::Result<TemplateScaffoldResult> {
+        self.repository
+            .scaffold_template(template_id, output, force)
     }
 
     pub fn record_intake(&self, input: IntakeInput) -> crate::infrastructure::Result<i64> {

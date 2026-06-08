@@ -21,14 +21,14 @@ Status values:
 
 | # | Responsibility | Status | Harness Files | Evidence | Gap |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Task specification | Covered | `AGENTS.md`, `docs/harness/FEATURE_INTAKE.md`, `docs/harness/templates/story.md`, `docs/harness/templates/spec-intake.md`, `docs/harness/templates/high-risk-story/*`, `docs/stories/*`, `intake` table, `story` table | Requests are classified by type and lane before implementation; normal and high-risk work have templates and durable story rows. | Keep story packets synchronized with future product docs. |
+| 1 | Task specification | Covered | `AGENTS.md`, `docs/harness/FEATURE_INTAKE.md`, `docs/harness/templates/stories/story.md`, `docs/harness/templates/intake/spec-intake.md`, `docs/harness/templates/stories/high-risk/*`, `docs/stories/*`, `intake` table, `story` table | Requests are classified by type and lane before implementation; normal and high-risk work have templates and durable story rows. | Keep story packets synchronized with future product docs. |
 | 2 | Context selection | Covered | `AGENTS.md`, `docs/harness/CONTEXT_RULES.md`, `docs/architecture/overview.md`, `docs/decisions/*`, `docs/product/README.md` | Phase 2 adds phase-by-lane context rules and retrieval triggers while preserving the stable entry list in `AGENTS.md`. | Future automation could enforce context selection or measure over-reading. |
 | 3 | Tool access | Partial | `scripts/bin/harness-cli`, `scripts/README.md`, `crates/harness-cli/*`, `scripts/install-harness.sh`, `scripts/build-harness-cli-release.sh` | The Harness CLI exposes operational commands for intake, stories, decisions, backlog, traces, trace scoring, and queries. | No machine-readable tool registry, permission profile, or capability manifest exists yet. |
 | 4 | Project memory | Covered | `docs/harness/HARNESS.md`, `docs/decisions/*`, `docs/GLOSSARY.md`, `docs/harness/HARNESS_BACKLOG.md`, `docs/stories/*`, `harness.db`, `decision`, `backlog`, and `trace` tables | Decisions, backlog, stories, and traces preserve durable knowledge across tasks. | Future work should add staleness checks and summarize old traces. |
 | 5 | Task state | Covered | `scripts/bin/harness-cli query matrix`, `docs/validation/test-matrix.md`, `intake` table, `story` table, `trace` table | Durable records track intake, story status, proof columns, and task traces. | Add lifecycle checks so in-progress stories cannot be forgotten. |
 | 6 | Observability | Partial | `docs/harness/TRACE_SPEC.md`, `trace` table, `scripts/bin/harness-cli trace`, `scripts/bin/harness-cli score-trace`, `scripts/bin/harness-cli query traces`, `scripts/bin/harness-cli query friction`, `docs/harness/HARNESS_MATURITY.md` | Traces are auto-scored when recorded, can be rescored by command, and can be reviewed with friction context. | No dashboard or benchmark ingestion exists in this repo. |
 | 7 | Failure attribution | Partial | `docs/harness/HARNESS_COMPONENTS.md`, `docs/harness/TRACE_SPEC.md`, `trace.errors`, `trace.harness_friction`, `docs/harness/HARNESS_BACKLOG.md`, `backlog` table, `scripts/bin/harness-cli query friction` | Failures can be tied to files, components, friction, backlog proposals, and linked intake lane/type context. | No automated attribution from benchmark failures to harness components exists yet. |
-| 8 | Verification | Covered | `docs/validation/test-matrix.md`, `scripts/bin/harness-cli query matrix`, `scripts/bin/harness-cli story verify`, `scripts/bin/harness-cli trace`, `scripts/bin/harness-cli score-trace`, `story.verify_command`, `story.last_verified_result`, `.github/workflows/harness-cli-release.yml`, `docs/harness/templates/validation-report.md` | Stories can store and run mechanical proof commands, traces warn when linked story verification has not passed, trace quality can be checked mechanically, and release workflow verifies Rust CLI releases. | Batch story verification and benchmark ingestion remain future work. |
+| 8 | Verification | Covered | `docs/validation/test-matrix.md`, `scripts/bin/harness-cli query matrix`, `scripts/bin/harness-cli story verify`, `scripts/bin/harness-cli trace`, `scripts/bin/harness-cli score-trace`, `story.verify_command`, `story.last_verified_result`, `.github/workflows/harness-cli-release.yml`, `docs/harness/templates/validation/validation-report.md` | Stories can store and run mechanical proof commands, traces warn when linked story verification has not passed, trace quality can be checked mechanically, and release workflow verifies Rust CLI releases. | Batch story verification and benchmark ingestion remain future work. |
 | 9 | Permissions | Partial | `AGENTS.md`, `docs/harness/HARNESS.md`, `docs/harness/FEATURE_INTAKE.md`, `docs/architecture/overview.md`, installer conflict handling in `scripts/install-harness.sh` | Policy describes when agents may update docs and when to ask before architecture or workflow changes. | Permissions are instruction-level only; no enforced policy layer or command allowlist exists. |
 | 10 | Entropy auditing | Partial | `docs/harness/HARNESS_BACKLOG.md`, `backlog` table, `trace.harness_friction`, `docs/harness/HARNESS_MATURITY.md` | Growth rule captures friction, backlog items can compare predicted impact to actual outcome, and Phase 2 defines maturity movement. | No drift detector, stale-doc audit, or entropy score exists. |
 | 11 | Intervention recording | Partial | `trace` table, `docs/decisions/*`, `docs/stories/*`, `docs/harness/HARNESS.md` | Traces and decisions can record actions, decisions, and outcomes. | Human interventions are not separated from normal agent actions, and there is no review-event schema. |
@@ -99,14 +99,14 @@ one Runtime Substrate responsibility.
 | `docs/stories/epics/E01-durable-layer/US-002-rust-harness-cli/execplan.md` | Task specification | Verification, task state |
 | `docs/stories/epics/E01-durable-layer/US-002-rust-harness-cli/validation.md` | Verification | Intervention recording |
 | `docs/stories/epics/E02-phase-2-observability-taxonomy/phase-2-progress.md` | Task state | Intervention recording |
-| `docs/harness/templates/decision.md` | Project memory | Task specification |
-| `docs/harness/templates/spec-intake.md` | Task specification | Context selection |
-| `docs/harness/templates/story.md` | Task specification | Verification |
-| `docs/harness/templates/validation-report.md` | Verification | Intervention recording |
-| `docs/harness/templates/high-risk-story/overview.md` | Task specification | Context selection |
-| `docs/harness/templates/high-risk-story/design.md` | Task specification | Permissions |
-| `docs/harness/templates/high-risk-story/execplan.md` | Task state | Verification |
-| `docs/harness/templates/high-risk-story/validation.md` | Verification | Failure attribution |
+| `docs/harness/templates/decisions/decision.md` | Project memory | Task specification |
+| `docs/harness/templates/intake/spec-intake.md` | Task specification | Context selection |
+| `docs/harness/templates/stories/story.md` | Task specification | Verification |
+| `docs/harness/templates/validation/validation-report.md` | Verification | Intervention recording |
+| `docs/harness/templates/stories/high-risk/overview.md` | Task specification | Context selection |
+| `docs/harness/templates/stories/high-risk/design.md` | Task specification | Permissions |
+| `docs/harness/templates/stories/high-risk/execplan.md` | Task state | Verification |
+| `docs/harness/templates/stories/high-risk/validation.md` | Verification | Failure attribution |
 | `scripts/README.md` | Tool access | Context selection |
 | `scripts/bin/harness-cli` | Tool access | Task state, observability |
 | `scripts/bin/harness-cli` | Tool access | Task state, observability |
