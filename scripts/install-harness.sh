@@ -530,7 +530,7 @@ read_cli_release_tag() {
 
 default_cli_base_url() {
   local release_tag="${HARNESS_CLI_RELEASE_TAG:-}"
-  local default_release_tag="harness-cli-v0.1.12-project-harness"
+  local default_release_tag="harness-cli-v0.1.13-project-harness"
 
   if [ -z "$release_tag" ]; then
     release_tag="$(read_cli_release_tag)"
