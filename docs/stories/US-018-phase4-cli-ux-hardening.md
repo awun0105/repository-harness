@@ -19,7 +19,7 @@ fails.
 
 - `docs/harness/HARNESS.md`
 - `scripts/README.md`
-- `docs/harness/templates/story.md`
+- `docs/harness/templates/stories/story.md`
 - `docs/harness/HARNESS_BACKLOG.md`
 
 ## Acceptance Criteria

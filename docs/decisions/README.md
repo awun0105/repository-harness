@@ -3,7 +3,7 @@
 Decision records explain why important product, architecture, or harness choices
 were made.
 
-Use `docs/harness/templates/decision.md` when adding a new decision.
+Use `docs/harness/templates/decisions/decision.md` when adding a new decision.
 
 After adding or updating a markdown decision file, also add or refresh the
 durable decision row:

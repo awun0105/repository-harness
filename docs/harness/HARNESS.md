@@ -282,7 +282,7 @@ For auth, authorization, data ownership, API shape, audit/security, or
 validation changes, record the decision in both places:
 
 1. Add a markdown file under `docs/decisions/` from
-   `docs/harness/templates/decision.md`.
+   `docs/harness/templates/decisions/decision.md`.
 2. Add or refresh the durable record:
 
 ```bash

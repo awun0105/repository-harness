@@ -25,7 +25,7 @@ The input is classified as a new spec because it introduces a new product idea
 with no existing product contract.
 
 The first output should not be app code. It should be a spec-intake note using
-`docs/harness/templates/spec-intake.md`.
+`docs/harness/templates/intake/spec-intake.md`.
 
 Example intake shape:
 
@@ -74,7 +74,7 @@ Changing assignee does not change task status.
 ## Story Packet
 
 Once the product contract is clear enough, the agent creates a story packet from
-`docs/harness/templates/story.md`.
+`docs/harness/templates/stories/story.md`.
 
 Example story:
 

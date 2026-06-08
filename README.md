@@ -189,7 +189,8 @@ codebases:
 - Existing project onboarding is a first-class workflow.
 - Empty or generated docs must not be treated as source of truth.
 - The validation matrix supports partial and unknown states.
-- README and docs templates live under `docs/harness/templates/readme-suite/`.
+- README, docs-suite, requirements, onboarding, story, decision, and validation
+  templates live under categorized folders in `docs/harness/templates/`.
 
 ## Product Sources
 

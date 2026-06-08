@@ -59,5 +59,5 @@ Record the conflict, cite evidence, and mark the state as one of:
 - `unknown`: not enough evidence
 - `not implemented`: no evidence found
 
-Use `docs/harness/templates/doc-conflict.md` when the conflict needs to be kept
-for follow-up.
+Use `docs/harness/templates/onboarding/doc-conflict.md` when the conflict needs
+to be kept for follow-up.

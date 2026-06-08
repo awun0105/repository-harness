@@ -32,8 +32,8 @@ Read to decide the smallest safe approach and expected proof.
 | Document Or Source | Tiny | Normal | High-Risk |
 | --- | --- | --- | --- |
 | Current files to edit | Must | Must | Must |
-| `docs/harness/templates/story.md` | Skip | Must when creating/updating a story | Should |
-| `docs/harness/templates/high-risk-story/*` | Skip | Skip unless risk escalates | Must |
+| `docs/harness/templates/stories/story.md` | Skip | Must when creating/updating a story | Should |
+| `docs/harness/templates/stories/high-risk/*` | Skip | Skip unless risk escalates | Must |
 | `docs/architecture/overview.md` | Skip | Should for code or boundary changes | Must |
 | `docs/validation/test-matrix.md` or `scripts/bin/harness-cli query matrix` | Should | Must | Must |
 | Relevant decisions | Skip | Should | Must |
@@ -65,7 +65,7 @@ Read to prove the change and avoid claiming unsupported completion.
 | Story acceptance criteria | Should | Must | Must |
 | `docs/validation/test-matrix.md` or `scripts/bin/harness-cli query matrix` | Should | Must | Must |
 | Validation section of story packet | Skip if no story | Must | Must |
-| `docs/harness/templates/validation-report.md` | Skip | Should for notable proof | Must for high-risk proof |
+| `docs/harness/templates/validation/validation-report.md` | Skip | Should for notable proof | Must for high-risk proof |
 | Relevant commands from README/package docs | Should | Must | Must |
 | Benchmark protocol or external benchmark repo | Skip | Skip unless requested | Must if the story depends on benchmark proof |
 | `docs/harness/HARNESS_MATURITY.md` | Skip | Should for Harness improvements | Must for maturity claims |
@@ -90,7 +90,7 @@ Read to leave useful evidence for the next agent and for benchmark scoring.
 | --- | --- |
 | Task touches database schema, durable records, or migrations | Read `docs/decisions/0004-sqlite-durable-layer.md`, `scripts/schema/`, and relevant CLI code before planning. |
 | Task touches CLI command behavior or installer distribution | Read `docs/decisions/0005-prebuilt-rust-harness-cli.md`, `scripts/README.md`, relevant `crates/harness-cli/*` code, CLI help output, and installer docs. |
-| Task touches auth, authorization, audit/security, data loss, or external providers | Treat as high-risk, read `docs/harness/templates/high-risk-story/*`, and check prior decisions before implementation. |
+| Task touches auth, authorization, audit/security, data loss, or external providers | Treat as high-risk, read `docs/harness/templates/stories/high-risk/*`, and check prior decisions before implementation. |
 | Task changes public API shape, product behavior, or user-visible workflow | Read relevant `docs/product/*`, story packets, and validation expectations before editing. |
 | Task changes Harness policy, source hierarchy, risk classification, or validation requirements | Read `docs/harness/HARNESS.md`, `docs/harness/FEATURE_INTAKE.md`, `docs/architecture/overview.md`, and `docs/decisions/*`; pause if direction is ambiguous. |
 | Task discovers repeated confusion, stale docs, or missing proof | Read `docs/harness/HARNESS_BACKLOG.md`, record `harness_friction`, and add a backlog item when the fix is out of scope. |
