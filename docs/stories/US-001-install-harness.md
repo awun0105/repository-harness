@@ -17,8 +17,8 @@ scripts, CI, tests, or product implementation.
 ## Relevant Product Docs
 
 - `README.md`
-- `docs/HARNESS.md`
-- `docs/FEATURE_INTAKE.md`
+- `docs/harness/HARNESS.md`
+- `docs/harness/FEATURE_INTAKE.md`
 - `scripts/README.md`
 
 ## Acceptance Criteria

@@ -16,7 +16,7 @@ Agents can run `scripts/bin/harness-cli story verify <id>` to execute a story's
 ## Relevant Product Docs
 
 - `PHASE4.md`
-- `docs/HARNESS.md`
+- `docs/harness/HARNESS.md`
 - `docs/GLOSSARY.md`
 
 ## Acceptance Criteria

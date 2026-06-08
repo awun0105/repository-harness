@@ -17,10 +17,10 @@ fails.
 
 ## Relevant Product Docs
 
-- `docs/HARNESS.md`
+- `docs/harness/HARNESS.md`
 - `scripts/README.md`
-- `docs/templates/story.md`
-- `docs/HARNESS_BACKLOG.md`
+- `docs/harness/templates/story.md`
+- `docs/harness/HARNESS_BACKLOG.md`
 
 ## Acceptance Criteria
 

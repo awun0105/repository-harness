@@ -17,8 +17,8 @@ exit code.
 ## Relevant Product Docs
 
 - `PHASE4.md`
-- `docs/TRACE_SPEC.md`
-- `docs/HARNESS.md`
+- `docs/harness/TRACE_SPEC.md`
+- `docs/harness/HARNESS.md`
 
 ## Acceptance Criteria
 

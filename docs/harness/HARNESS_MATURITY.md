@@ -48,21 +48,21 @@ state may still be manual or incomplete.
 Criteria:
 
 - `AGENTS.md` points agents to the Harness operating docs.
-- `docs/HARNESS.md`, `docs/FEATURE_INTAKE.md`, and `docs/ARCHITECTURE.md`
+- `docs/harness/HARNESS.md`, `docs/harness/FEATURE_INTAKE.md`, and `docs/architecture/overview.md`
   exist.
-- Story, decision, and validation templates exist under `docs/templates/`.
-- `docs/TEST_MATRIX.md` defines proof columns and status meanings.
+- Story, decision, and validation templates exist under `docs/harness/templates/`.
+- `docs/validation/test-matrix.md` defines proof columns and status meanings.
 
 Required files:
 
 - `AGENTS.md`
-- `docs/HARNESS.md`
-- `docs/FEATURE_INTAKE.md`
-- `docs/ARCHITECTURE.md`
-- `docs/TEST_MATRIX.md`
-- `docs/templates/story.md`
-- `docs/templates/decision.md`
-- `docs/templates/validation-report.md`
+- `docs/harness/HARNESS.md`
+- `docs/harness/FEATURE_INTAKE.md`
+- `docs/architecture/overview.md`
+- `docs/validation/test-matrix.md`
+- `docs/harness/templates/story.md`
+- `docs/harness/templates/decision.md`
+- `docs/harness/templates/validation-report.md`
 
 Benchmark indicators:
 
@@ -93,21 +93,21 @@ Criteria:
   data in `harness.db`.
 - `scripts/schema/001-init.sql` defines durable tables for intake, story,
   decision, backlog, and trace records.
-- `docs/HARNESS_COMPONENTS.md` maps files and responsibilities.
-- `docs/HARNESS_MATURITY.md` defines H0-H5 with measurable criteria.
-- `docs/TRACE_SPEC.md` defines trace fields, quality tiers, and friction
+- `docs/harness/HARNESS_COMPONENTS.md` maps files and responsibilities.
+- `docs/harness/HARNESS_MATURITY.md` defines H0-H5 with measurable criteria.
+- `docs/harness/TRACE_SPEC.md` defines trace fields, quality tiers, and friction
   capture.
-- `docs/CONTEXT_RULES.md` defines phase-by-lane context rules.
-- `AGENTS.md` and `docs/HARNESS.md` reference the Phase 2 operating docs.
+- `docs/harness/CONTEXT_RULES.md` defines phase-by-lane context rules.
+- `AGENTS.md` and `docs/harness/HARNESS.md` reference the Phase 2 operating docs.
 
 Required files:
 
 - `scripts/bin/harness-cli`
 - `scripts/schema/001-init.sql`
-- `docs/HARNESS_COMPONENTS.md`
-- `docs/HARNESS_MATURITY.md`
-- `docs/TRACE_SPEC.md`
-- `docs/CONTEXT_RULES.md`
+- `docs/harness/HARNESS_COMPONENTS.md`
+- `docs/harness/HARNESS_MATURITY.md`
+- `docs/harness/TRACE_SPEC.md`
+- `docs/harness/CONTEXT_RULES.md`
 
 Benchmark indicators:
 
@@ -138,7 +138,7 @@ into prioritized improvements.
 Criteria:
 
 - Trace quality can be scored by a repeatable command or benchmark step.
-- Harness friction can be grouped by component from `docs/HARNESS_COMPONENTS.md`.
+- Harness friction can be grouped by component from `docs/harness/HARNESS_COMPONENTS.md`.
 - Backlog items include predicted impact and actual outcome after completion.
 - Benchmark comparison output identifies which harness responsibility moved or
   regressed.
@@ -262,8 +262,8 @@ Activated responsibilities:
 | Level | Status | Evidence |
 | --- | --- | --- |
 | H0 | Passed | Harness docs, templates, and durable records exist. |
-| H1 | Achieved | `AGENTS.md`, `docs/HARNESS.md`, `docs/FEATURE_INTAKE.md`, `docs/ARCHITECTURE.md`, `docs/templates/*`, and `docs/TEST_MATRIX.md` exist. |
-| H2 | Achieved | `scripts/bin/harness-cli`, `scripts/schema/001-init.sql`, durable story records, `docs/HARNESS_COMPONENTS.md`, `docs/HARNESS_MATURITY.md`, `docs/TRACE_SPEC.md`, and `docs/CONTEXT_RULES.md` define the Phase 2 surface. |
+| H1 | Achieved | `AGENTS.md`, `docs/harness/HARNESS.md`, `docs/harness/FEATURE_INTAKE.md`, `docs/architecture/overview.md`, `docs/harness/templates/*`, and `docs/validation/test-matrix.md` exist. |
+| H2 | Achieved | `scripts/bin/harness-cli`, `scripts/schema/001-init.sql`, durable story records, `docs/harness/HARNESS_COMPONENTS.md`, `docs/harness/HARNESS_MATURITY.md`, `docs/harness/TRACE_SPEC.md`, and `docs/harness/CONTEXT_RULES.md` define the Phase 2 surface. |
 | H3 | Partial | Phase 3 adds `scripts/bin/harness-cli score-trace`, enriched friction context, and the backlog outcome loop; Phase 4 auto-scores traces on write. Component-level benchmark attribution remains open. |
 | H4 | Partial | Phase 4 adds story-level `verify_command`, `story verify`, and trace-time verification warnings. Batch verification and proof-column automation remain open. |
 | H5 | Not achieved | No self-improvement protocol or automated evolution loop exists. |

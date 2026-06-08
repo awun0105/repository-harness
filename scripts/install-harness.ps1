@@ -7,7 +7,8 @@ param(
     [switch]$RefreshAgentShim,
     [switch]$Override,
     [switch]$Force,
-    [switch]$DryRun
+    [switch]$DryRun,
+    [string]$Layout = "project"
 )
 
 $ErrorActionPreference = "Stop"
@@ -38,7 +39,7 @@ function Resolve-TargetPath([string]$PathValue) {
 function Get-SourceMode {
     if ($PSScriptRoot) {
         $candidate = Split-Path -Parent $PSScriptRoot
-        if ((Test-Path (Join-Path $candidate "AGENTS.md")) -and (Test-Path (Join-Path $candidate "docs/HARNESS.md"))) {
+        if ((Test-Path (Join-Path $candidate "AGENTS.md")) -and (Test-Path (Join-Path $candidate "docs/harness/HARNESS.md"))) {
             return @{ Mode = "local"; Root = $candidate }
         }
     }
@@ -139,14 +140,17 @@ function Get-AgentShimBlock {
 This repo uses Harness. Before work, read:
 
 - `README.md`
-- `docs/HARNESS.md`
-- `docs/FEATURE_INTAKE.md`
-- `docs/ARCHITECTURE.md`
-- `docs/CONTEXT_RULES.md`
+- `docs/README.md`
+- `docs/harness/HARNESS.md`
+- `docs/harness/FEATURE_INTAKE.md`
+- `docs/architecture/overview.md`
+- `docs/harness/CONTEXT_RULES.md`
 - `scripts/bin/harness-cli query matrix` on macOS/Linux, or `.\scripts\bin\harness-cli.exe query matrix` on Windows
 
 Use the Rust Harness CLI at `scripts/bin/harness-cli` on macOS/Linux or
-`scripts/bin/harness-cli.exe` on Windows as the main operational tool.
+`scripts/bin/harness-cli.exe` on Windows as the main operational tool. If the
+CLI binary is unavailable in a checkout, read `docs/validation/test-matrix.md`
+directly and state that the durable matrix could not be queried.
 <!-- HARNESS:END -->
 '@
 }
@@ -208,9 +212,9 @@ function Get-DefaultCliBaseUrl {
         $tag = Read-CliReleaseTag
     }
     if (![string]::IsNullOrWhiteSpace($tag) -and $tag -ne "latest") {
-        return "https://github.com/hoangnb24/repository-harness/releases/download/$tag"
+        return "https://github.com/awun0105/repository-harness/releases/download/$tag"
     }
-    return "https://github.com/hoangnb24/repository-harness/releases/latest/download"
+    return "https://github.com/awun0105/repository-harness/releases/latest/download"
 }
 
 function Install-HarnessCliBinary {
@@ -278,11 +282,22 @@ $script:Created = 0
 $script:Updated = 0
 $script:Skipped = 0
 $script:Source = Get-SourceMode
-$script:SourceBaseUrl = if ($env:HARNESS_SOURCE_BASE_URL) { $env:HARNESS_SOURCE_BASE_URL.TrimEnd("/") } else { "https://raw.githubusercontent.com/hoangnb24/repository-harness/main" }
+$script:SourceBaseUrl = if ($env:HARNESS_SOURCE_BASE_URL) { $env:HARNESS_SOURCE_BASE_URL.TrimEnd("/") } else { "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness" }
 $script:CliBaseUrl = if ($env:HARNESS_CLI_BASE_URL) { $env:HARNESS_CLI_BASE_URL.TrimEnd("/") } else { Get-DefaultCliBaseUrl }
 $script:TargetDir = Resolve-TargetPath $Directory
 $script:BackupDir = Join-Path $script:TargetDir (".harness-backup/" + (Get-Date -Format "yyyyMMddHHmmss"))
 $script:ConflictAction = "install"
+
+if ($env:HARNESS_LAYOUT -and $Layout -eq "project") {
+    $Layout = $env:HARNESS_LAYOUT
+}
+
+if ($Layout -eq "legacy") {
+    Fail "-Layout legacy is not available in the Project Harness fork yet. Use -Layout project or -Layout harness-only."
+}
+if ($Layout -notin @("project", "harness-only")) {
+    Fail "Unknown layout: $Layout. Expected project or harness-only."
+}
 
 if ($Merge -and $Override) {
     Fail "Use only one of -Merge or -Override"
@@ -339,43 +354,87 @@ if ($script:Source.Mode -eq "local") {
 }
 Write-Step "Harness CLI source: $script:CliBaseUrl"
 Write-Step "Target project: $script:TargetDir"
+Write-Step "Layout: $Layout"
 
 $files = @(
     "AGENTS.md",
     "README.md",
-    "docs/ARCHITECTURE.md",
-    "docs/CONTEXT_RULES.md",
-    "docs/FEATURE_INTAKE.md",
+    "docs/architecture/overview.md",
+    "docs/architecture/README.md",
+    "docs/harness/CONTEXT_RULES.md",
+    "docs/harness/FEATURE_INTAKE.md",
     "docs/GLOSSARY.md",
-    "docs/HARNESS.md",
-    "docs/HARNESS_BACKLOG.md",
-    "docs/HARNESS_COMPONENTS.md",
-    "docs/HARNESS_MATURITY.md",
+    "docs/harness/HARNESS.md",
+    "docs/harness/HARNESS_BACKLOG.md",
+    "docs/harness/HARNESS_COMPONENTS.md",
+    "docs/harness/HARNESS_MATURITY.md",
+    "docs/harness/ONBOARDING_EXISTING_PROJECT.md",
     "docs/README.md",
-    "docs/TEST_MATRIX.md",
-    "docs/TRACE_SPEC.md",
+    "docs/onboarding/README.md",
+    "docs/planning/README.md",
+    "docs/requirements/README.md",
+    "docs/validation/test-matrix.md",
+    "docs/validation/README.md",
+    "docs/harness/TRACE_SPEC.md",
     "docs/decisions/0001-harness-first-development.md",
     "docs/decisions/0002-post-spec-product-lifecycle.md",
     "docs/decisions/0003-generic-spec-intake-harness.md",
     "docs/decisions/0004-sqlite-durable-layer.md",
     "docs/decisions/0005-prebuilt-rust-harness-cli.md",
+    "docs/decisions/0006-phase-4-benchmark-triage.md",
     "docs/decisions/README.md",
     "docs/product/README.md",
     "docs/stories/README.md",
     "docs/stories/backlog.md",
-    "docs/templates/decision.md",
-    "docs/templates/spec-intake.md",
-    "docs/templates/story.md",
-    "docs/templates/validation-report.md",
-    "docs/templates/high-risk-story/design.md",
-    "docs/templates/high-risk-story/execplan.md",
-    "docs/templates/high-risk-story/overview.md",
-    "docs/templates/high-risk-story/validation.md",
+    "docs/harness/templates/baseline-audit.md",
+    "docs/harness/templates/decision.md",
+    "docs/harness/templates/doc-conflict.md",
+    "docs/harness/templates/spec-intake.md",
+    "docs/harness/templates/story.md",
+    "docs/harness/templates/validation-report.md",
+    "docs/harness/templates/high-risk-story/design.md",
+    "docs/harness/templates/high-risk-story/execplan.md",
+    "docs/harness/templates/high-risk-story/overview.md",
+    "docs/harness/templates/high-risk-story/validation.md",
+    "docs/harness/templates/readme-suite/README.md",
+    "docs/harness/templates/readme-suite/README_TEMPLATE.md",
+    "docs/harness/templates/readme-suite/README_VN.md",
+    "docs/harness/templates/readme-suite/README_VN_TEMPLATE.md",
+    "docs/harness/templates/readme-suite/docs/README.md",
+    "docs/harness/templates/readme-suite/docs/EN/README.md",
+    "docs/harness/templates/readme-suite/docs/EN/api.md",
+    "docs/harness/templates/readme-suite/docs/EN/architecture.md",
+    "docs/harness/templates/readme-suite/docs/EN/configuration.md",
+    "docs/harness/templates/readme-suite/docs/EN/data-flow.md",
+    "docs/harness/templates/readme-suite/docs/EN/deployment/backup-restore.md",
+    "docs/harness/templates/readme-suite/docs/EN/deployment/setup.md",
+    "docs/harness/templates/readme-suite/docs/EN/evaluation.md",
+    "docs/harness/templates/readme-suite/docs/EN/local-development.md",
+    "docs/harness/templates/readme-suite/docs/EN/operations.md",
+    "docs/harness/templates/readme-suite/docs/EN/overview.md",
+    "docs/harness/templates/readme-suite/docs/EN/scripts.md",
+    "docs/harness/templates/readme-suite/docs/VN/README.md",
+    "docs/harness/templates/readme-suite/docs/VN/api.md",
+    "docs/harness/templates/readme-suite/docs/VN/architecture.md",
+    "docs/harness/templates/readme-suite/docs/VN/configuration.md",
+    "docs/harness/templates/readme-suite/docs/VN/data-flow.md",
+    "docs/harness/templates/readme-suite/docs/VN/deployment/backup-restore.md",
+    "docs/harness/templates/readme-suite/docs/VN/deployment/setup.md",
+    "docs/harness/templates/readme-suite/docs/VN/evaluation.md",
+    "docs/harness/templates/readme-suite/docs/VN/local-development.md",
+    "docs/harness/templates/readme-suite/docs/VN/operations.md",
+    "docs/harness/templates/readme-suite/docs/VN/overview.md",
+    "docs/harness/templates/readme-suite/docs/VN/scripts.md",
     "scripts/README.md",
     "scripts/schema/001-init.sql",
     "scripts/schema/002-story-verify.sql",
     ".gitignore"
 )
+
+if ($Layout -eq "harness-only") {
+    $projectOnlyPattern = "^(README\.md|docs/architecture/|docs/GLOSSARY\.md|docs/onboarding/|docs/planning/|docs/requirements/|docs/decisions/|docs/product/|docs/stories/)"
+    $files = $files | Where-Object { $_ -notmatch $projectOnlyPattern }
+}
 
 foreach ($file in $files) {
     Copy-HarnessFile $file

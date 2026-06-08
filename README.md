@@ -1,23 +1,21 @@
-# repository-harness
+# Project Harness
 
-Turn any software repo into an agent-ready workspace.
+Turn an existing software project into a shared source of truth for humans and
+coding agents.
 
-`repository-harness` is a repository-level operating harness for Claude Code,
-Codex, Cursor, and other coding agents. It gives agents the missing project
-context they need before they change code: where to start, what the product
-contract says, how risky the work is, what proof is required, and which
-decisions future agents should inherit.
+Project Harness is a documentation and workflow layer for projects maintained
+with humans and coding agents such as Claude Code, Codex, Cursor, and similar
+tools. It gives the repository a durable map of current behavior, requirements,
+architecture, decisions, stories, and validation proof.
 
-The app is what users touch. The harness is what agents touch.
+The key rule is simple:
 
-## Why Star This Repo
+```text
+One project truth, shared by humans and agents.
+```
 
-Star this repo if you want practical, reusable patterns for making AI-assisted
-software development more reliable, inspectable, and easier for humans to steer.
-
-This project is exploring a simple idea:
-
-> Coding agents do not only need better prompts. They need better repositories.
+`docs/harness/` contains the operating rules for agents. The rest of `docs/`
+contains project truth that humans and agents both use.
 
 ## The Problem
 
@@ -30,78 +28,90 @@ That leads to common failure modes:
 - Validation expectations are vague or discovered too late.
 - Architecture tradeoffs are repeated instead of inherited.
 - Large requests do not get broken into reviewable story-sized work.
+- Existing projects get template docs that do not match the current code.
 
 ## The Harness Approach
 
-A repository starts to have a harness when it helps an agent answer practical
-engineering questions without relying only on chat history:
+A repository starts to have a useful harness when it helps humans and agents
+answer practical engineering questions without relying only on chat history:
 
-- What should I read first?
-- What type of work is this?
-- Which product contract does it affect?
-- How risky is the change?
-- What proof will show the work is done?
-- What decision or lesson should future agents inherit?
+- What is the current product behavior?
+- Which docs are source of truth?
+- What is implemented, partial, unknown, or planned?
+- What should an agent read before changing code?
+- How risky is this request?
+- What proof is required before work is considered done?
+- Which decisions should future work inherit?
 
 In this repo, those answers live in:
 
 - `AGENTS.md` — the stable agent shim with local project notes and Harness
   doc links.
-- `docs/HARNESS.md` — the human-agent collaboration model.
-- `docs/FEATURE_INTAKE.md` — tiny, normal, and high-risk work classification.
-- `docs/ARCHITECTURE.md` — architecture discovery and boundary rules.
-- `docs/TEST_MATRIX.md` — behavior-to-proof validation expectations.
+- `docs/README.md` — the shared documentation map for humans and agents.
+- `docs/product/` — current product behavior and product vocabulary.
+- `docs/requirements/` — SRS, DFD, use cases, and requirement material.
+- `docs/architecture/` — technical architecture and system boundaries.
+- `docs/validation/` — proof matrix and validation reports.
+- `docs/harness/HARNESS.md` — the human-agent collaboration model.
+- `docs/harness/FEATURE_INTAKE.md` — tiny, normal, and high-risk work classification.
 - `docs/stories/` — story packets and backlog items.
 - `docs/decisions/` — durable decisions and tradeoffs.
-- `docs/templates/` — reusable spec, story, decision, and validation templates.
+- `docs/harness/templates/` — reusable onboarding, story, decision, validation,
+  and README/docs templates.
 
 OpenAI describes this shift as an agent-first world where humans steer and
 agents execute:
 
 https://openai.com/index/harness-engineering/
 
-## Install Harness Into A Project
+## Install Project Harness Into A Project
 
-From a target project directory, run:
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --yes
-```
-
-On Windows PowerShell, run:
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.ps1"))) -Yes
-```
-
-If the target already has `AGENTS.md`, `docs/`, or `scripts/`, choose one:
+Most existing projects should start with the process layer only:
 
 ```bash
-# Update an existing Harness repo without moving existing files
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --merge --yes
+curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout harness-only --merge --yes
+```
 
-# Back up and replace AGENTS.md, docs/, and scripts/
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --override --yes
+On Windows PowerShell:
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout harness-only -Merge -Yes
+```
+
+`harness-only` installs `AGENTS.md`, `docs/harness/`, reusable templates,
+`docs/validation/`, scripts, and `.gitignore` rules. It avoids creating
+product, architecture, requirements, planning, story, and decision docs before
+the existing codebase has been audited.
+
+After installing into an existing repo, run the onboarding workflow in:
+
+```text
+docs/harness/ONBOARDING_EXISTING_PROJECT.md
+```
+
+Use the full project layout for a new repo or a repo you intentionally want to
+convert into the complete Project Harness source-of-truth structure:
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout project --yes
 ```
 
 ```powershell
-# Update an existing Harness repo without moving existing files
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.ps1"))) -Merge -Yes
-
-# Back up and replace AGENTS.md, docs/, and scripts/
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.ps1"))) -Override -Yes
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout project -Yes
 ```
 
-Use `--merge` when a project already has Harness and you want to append newly
-added Harness files without moving the existing `AGENTS.md`, `docs/`, or
-`scripts/` paths into backup. Existing files stay untouched; only missing
-Harness files are created.
+If the target already has `AGENTS.md`, `docs/`, or `scripts/`, choose a conflict
+mode:
+
+- `--merge`: keep existing files and create only missing Project Harness files.
+- `--override`: back up and replace `AGENTS.md`, `docs/`, and `scripts/`.
+- default interactive mode: ask before continuing.
 
 For older Harness installs whose `AGENTS.md` still contains the full generated
 operating guide, refresh it into the small stable shim:
 
 ```bash
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --merge --refresh-agent-shim --yes
+curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --merge --refresh-agent-shim --yes
 ```
 
 The refresh backs up the existing file. If it detects the old
@@ -112,22 +122,22 @@ project's local instructions.
 If the project is driven with Claude Code, add `--claude`. Claude Code never
 auto-loads `AGENTS.md`, so without this the installed harness is invisible to
 fresh sessions. The flag installs (or refreshes) a `CLAUDE.md` whose marked
-Harness block `@`-imports `AGENTS.md` and `docs/FEATURE_INTAKE.md` into every
+Harness block `@`-imports `AGENTS.md` and `docs/harness/FEATURE_INTAKE.md` into every
 session's context. An existing `CLAUDE.md` gets the block appended after a
 backup; plain installs without the flag never touch `CLAUDE.md`:
 
 ```bash
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --claude --yes
+curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --claude --yes
 ```
 
 Or install into a specific path:
 
 ```bash
-curl -fsSL "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.sh?$(date +%s)" | bash -s -- --directory /path/to/project --yes
+curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --directory /path/to/project --yes
 ```
 
 ```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/hoangnb24/repository-harness/main/scripts/install-harness.ps1"))) -Directory C:\path\to\project -Yes
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Directory C:\path\to\project -Yes
 ```
 
 Use `--dry-run` on Bash or `-DryRun` on PowerShell to preview changes before
@@ -170,28 +180,34 @@ validation and harness maintenance expectations.
 
 ## Current State
 
-This repository is in Harness v0.
+This fork is becoming Project Harness.
 
-There is no application implementation and no baked-in product specification
-yet. The current work is the reusable project harness: the file structure,
-agent operating model, feature intake process, story templates, and validation
-expectations that help humans and agents turn a future user-provided spec into
-implementation work.
+Compared with the upstream layout, this branch is optimized for existing
+codebases:
+
+- Shared project docs are separate from Harness process docs.
+- Existing project onboarding is a first-class workflow.
+- Empty or generated docs must not be treated as source of truth.
+- The validation matrix supports partial and unknown states.
+- README and docs templates live under `docs/harness/templates/readme-suite/`.
 
 ## Product Sources
 
-No product contract is currently defined.
+No product contract is currently defined for this harness repository itself.
 
 When a user provides a project specification, add or reference it as the input
 spec for the first buildout, then derive smaller living artifacts from it:
 
 - `docs/product/`: current product contract files, created from the spec.
+- `docs/requirements/`: SRS, DFD, use cases, and non-functional requirements.
+- `docs/architecture/`: technical structure and boundary docs.
 - `docs/stories/`: story packets and backlog created from selected work.
-- `docs/TEST_MATRIX.md`: behavior-to-proof control panel.
+- `docs/validation/test-matrix.md`: behavior-to-proof control panel.
 - `docs/decisions/`: durable decisions and tradeoffs.
 
-Do not keep a project-specific spec or product breakdown in this harness until
-a real project supplies one.
+When adding Project Harness to an existing repo, run the onboarding workflow in
+`docs/harness/ONBOARDING_EXISTING_PROJECT.md` before trusting generated docs as
+truth.
 
 ## Repository Structure
 
@@ -200,16 +216,22 @@ project/
   AGENTS.md
   README.md
   docs/
-    HARNESS.md
-    FEATURE_INTAKE.md
-    ARCHITECTURE.md
-    TEST_MATRIX.md
-    HARNESS_BACKLOG.md
+    README.md
     product/
+    requirements/
+    architecture/
+    planning/
     stories/
     decisions/
+    validation/
+    onboarding/
+    harness/
+      HARNESS.md
+      FEATURE_INTAKE.md
+      CONTEXT_RULES.md
+      ONBOARDING_EXISTING_PROJECT.md
+      templates/
     demo/
-    templates/
   scripts/
     README.md
 ```
