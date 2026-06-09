@@ -216,7 +216,7 @@ function Read-CliReleaseTag {
 
 function Get-DefaultCliBaseUrl {
     $tag = $env:HARNESS_CLI_RELEASE_TAG
-    $defaultTag = "harness-cli-v0.1.14-project-harness"
+    $defaultTag = "harness-cli-v0.1.15-project-harness"
     if ([string]::IsNullOrWhiteSpace($tag)) {
         $tag = Read-CliReleaseTag
     }
@@ -377,11 +377,14 @@ $files = @(
     "docs/harness/FEATURE_INTAKE.md",
     "docs/GLOSSARY.md",
     "docs/harness/HARNESS.md",
+    "docs/harness/HARNESS_AUDIT.md",
     "docs/harness/HARNESS_BACKLOG.md",
     "docs/harness/HARNESS_COMPONENTS.md",
     "docs/harness/HARNESS_MATURITY.md",
+    "docs/harness/IMPROVEMENT_PROTOCOL.md",
     "docs/harness/ONBOARDING_EXISTING_PROJECT.md",
     "docs/harness/TEMPLATE_REGISTRY.md",
+    "docs/harness/TOOL_REGISTRY.md",
     "docs/README.md",
     "docs/onboarding/README.md",
     "docs/planning/README.md",
@@ -445,6 +448,8 @@ $files = @(
     "scripts/schema/001-init.sql",
     "scripts/schema/002-story-verify.sql",
     "scripts/schema/003-onboarding-statuses.sql",
+    "scripts/schema/004-tool-registry.sql",
+    "scripts/schema/005-intervention.sql",
     ".gitignore"
 )
 

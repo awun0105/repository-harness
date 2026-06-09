@@ -216,6 +216,8 @@ scripts/bin/harness-cli query backlog --open
 scripts/bin/harness-cli query decisions
 scripts/bin/harness-cli query traces
 scripts/bin/harness-cli query stats
+scripts/bin/harness-cli audit
+scripts/bin/harness-cli propose
 scripts/bin/harness-cli template list
 scripts/bin/harness-cli scaffold product_domain --output docs/product/tasks.md
 ```
@@ -241,6 +243,9 @@ codebases:
   creating, normalizing, or syncing docs.
 - `scripts/bin/harness-cli template list` and `scripts/bin/harness-cli scaffold`
   expose registered templates mechanically.
+- `scripts/bin/harness-cli audit`, `propose`, `story verify-all`,
+  `score-context`, `tool`, and `intervention` add upstream Phase 5 drift,
+  proposal, tool-registry, and intervention workflows adapted to this fork.
 - The installer pulls this fork's published `harness-cli` release assets and
   verifies checksums.
 
