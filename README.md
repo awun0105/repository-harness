@@ -72,110 +72,13 @@ agents execute:
 
 https://openai.com/index/harness-engineering/
 
-## Install Project Harness Into A Project
+## Install And Use-Case Paths
 
-Most existing projects should start with the process layer only:
+The fastest way to understand the harness is to inspect `docs/demo/README.md`.
+It shows how a simple product idea becomes product docs, stories, validation
+expectations, and decisions before implementation starts.
 
-```bash
-curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout harness-only --merge --yes
-```
-
-On Windows PowerShell:
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout harness-only -Merge -Yes
-```
-
-`harness-only` installs `AGENTS.md`, `docs/harness/`, reusable templates,
-`docs/validation/`, scripts, and `.gitignore` rules. It avoids creating
-product, architecture, requirements, planning, story, and decision docs before
-the existing codebase has been audited.
-
-After installing into an existing repo, run the onboarding workflow in:
-
-```text
-docs/harness/ONBOARDING_EXISTING_PROJECT.md
-```
-
-That workflow audits the real repo first. Existing docs and code are treated as
-evidence, not automatic truth. The expected first outputs are a source
-inventory, a doc sync plan, a baseline audit, conflicts/unknowns, and then
-normalized docs generated from cited evidence.
-
-Use the full project layout for a new repo or a repo you intentionally want to
-convert into the complete Project Harness source-of-truth structure:
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout project --yes
-```
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout project -Yes
-```
-
-If the target already has `AGENTS.md`, `docs/`, or `scripts/`, choose a conflict
-mode:
-
-- `--merge`: keep existing files and create only missing Project Harness files.
-- `--override`: back up and replace `AGENTS.md`, `docs/`, and `scripts/`.
-- default interactive mode: ask before continuing.
-
-For older Harness installs whose `AGENTS.md` still contains the full generated
-operating guide, refresh it into the small stable shim:
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --merge --refresh-agent-shim --yes
-```
-
-The refresh backs up the existing file. If it detects the old
-Harness-generated guide, it replaces it with the shim. If the file appears
-custom, it appends or updates a marked Harness block instead of overwriting the
-project's local instructions.
-
-If the project is driven with Claude Code, add `--claude`. Claude Code never
-auto-loads `AGENTS.md`, so without this the installed harness is invisible to
-fresh sessions. The flag installs (or refreshes) a `CLAUDE.md` whose marked
-Harness block `@`-imports `AGENTS.md` and `docs/harness/FEATURE_INTAKE.md` into every
-session's context. An existing `CLAUDE.md` gets the block appended after a
-backup; plain installs without the flag never touch `CLAUDE.md`:
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --claude --yes
-```
-
-Or install into a specific path:
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --directory /path/to/project --yes
-```
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Directory C:\path\to\project -Yes
-```
-
-Use `--dry-run` on Bash or `-DryRun` on PowerShell to preview changes before
-writing files.
-
-The installer also downloads the prebuilt Harness CLI for the current platform,
-verifies its `.sha256` checksum, and installs it at
-`scripts/bin/harness-cli` on macOS/Linux or `scripts/bin/harness-cli.exe` on
-Windows. The Rust CLI is the main Harness tool and stable command path.
-
-Harness CLI release assets are published from tags by the
-`Harness CLI Release` GitHub Actions workflow. The installer expects each
-release to include `harness-cli-<platform>` and
-`harness-cli-<platform>.sha256` assets for macOS arm64, macOS x64, Linux x64,
-Linux arm64, and Windows x64. The Windows asset is
-`harness-cli-windows-x64.exe` plus `harness-cli-windows-x64.exe.sha256`.
-
-## Try The Flow
-
-The fastest way to understand the harness is to inspect the tiny demo:
-
-- `docs/demo/README.md`: shows how a simple product idea becomes product docs,
-  stories, validation expectations, and decisions before implementation starts.
-
-A typical flow looks like this:
+A typical Harness flow looks like this:
 
 ```text
 human intent or product spec
@@ -194,6 +97,17 @@ validation and harness maintenance expectations.
 ### Existing Project
 
 Use this when the repository already has code, tests, scripts, or old docs.
+Most existing projects should start with `harness-only`, which installs the
+Harness process layer without creating fake product truth before the codebase is
+audited.
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout harness-only --merge --yes
+```
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout harness-only -Merge -Yes
+```
 
 ```text
 developer installs harness-only
@@ -224,19 +138,25 @@ Review after onboarding:
 - `docs/validation/test-matrix.md`
 - `docs/stories/backlog.md`
 
-Then ask the agent to update the baseline from your answers and run:
+Then ask the agent to update the baseline and run the required Harness CLI
+sync/query steps:
 
-```bash
-scripts/bin/harness-cli init
-scripts/bin/harness-cli import brownfield
-scripts/bin/harness-cli query matrix
-scripts/bin/harness-cli query backlog --open
-scripts/bin/harness-cli query stats
+```text
+Update the Harness baseline from my answers, then run the required harness-cli sync and query steps and summarize the current matrix, open backlog, and stats.
 ```
 
 ### New Project
 
-Use this when the repo starts from a human spec instead of existing code.
+Use this when the repo starts from a human spec instead of existing code. The
+full `project` layout creates the complete source-of-truth structure up front.
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout project --yes
+```
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout project -Yes
+```
 
 ```text
 human spec
@@ -275,7 +195,20 @@ Prompt:
 Read AGENTS.md and handle this request through Harness intake, story, validation, implementation, proof update, and trace recording.
 ```
 
-Useful CLI commands after onboarding:
+### Installer Options
+
+Use `--dry-run` on Bash or `-DryRun` on PowerShell to preview changes before
+writing files. Use `--merge` for repos with existing docs. Use `--override` only
+when replacing `AGENTS.md`, `docs/`, and `scripts/` is intentional. Add
+`--claude` when the project is driven by Claude Code so `CLAUDE.md` imports the
+Harness instructions. Use `--directory /path/to/project` or
+`-Directory C:\path\to\project` to install into another path.
+
+The installer downloads the prebuilt Harness CLI for the current platform,
+verifies its checksum, and installs it at `scripts/bin/harness-cli` on
+macOS/Linux or `scripts/bin/harness-cli.exe` on Windows.
+
+### Useful CLI Commands
 
 ```bash
 scripts/bin/harness-cli query matrix
