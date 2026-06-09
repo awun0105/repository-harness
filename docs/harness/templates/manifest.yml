@@ -36,6 +36,12 @@ templates:
     description: Software Requirements and Design Specification.
     requires_review: true
 
+  product_domain:
+    template: docs/harness/templates/product/domain.md
+    default_output_pattern: docs/product/{domain}.md
+    description: Product domain contract.
+    requires_review: true
+
   spec_intake:
     template: docs/harness/templates/intake/spec-intake.md
     default_output: docs/stories/spec-intake.md

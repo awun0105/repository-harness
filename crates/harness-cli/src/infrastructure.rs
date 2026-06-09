@@ -1,5 +1,5 @@
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Component, PathBuf};
 use std::process::Command;
 use std::str::FromStr;
 
@@ -49,6 +49,8 @@ pub enum HarnessInfraError {
     MissingTemplateSource(String),
     #[error("template output already exists: {0}. Pass --force to overwrite.")]
     TemplateOutputExists(String),
+    #[error("template output path must stay inside the repo: {0}")]
+    InvalidTemplateOutputPath(String),
     #[error("template manifest is malformed: {0}")]
     MalformedTemplateManifest(String),
     #[error("story update: nothing to update")]
@@ -477,6 +479,7 @@ impl HarnessRepository for SqliteHarnessRepository {
         let output = output
             .or_else(|| template.default_output.clone())
             .ok_or_else(|| HarnessInfraError::TemplateNeedsOutput(template.id.clone()))?;
+        validate_template_output_path(&output)?;
         let template_path = self.repo_root.join(&template.template);
         if !template_path.exists() {
             return Err(HarnessInfraError::MissingTemplateSource(
@@ -1234,6 +1237,29 @@ fn validate_template_entry(entry: &TemplateEntry) -> Result<()> {
     Ok(())
 }
 
+fn validate_template_output_path(output: &str) -> Result<()> {
+    if output.trim().is_empty() {
+        return Err(HarnessInfraError::InvalidTemplateOutputPath(
+            output.to_owned(),
+        ));
+    }
+
+    let path = PathBuf::from(output);
+    if path.is_absolute()
+        || path.components().any(|component| {
+            matches!(
+                component,
+                Component::ParentDir | Component::RootDir | Component::Prefix(_)
+            )
+        })
+    {
+        return Err(HarnessInfraError::InvalidTemplateOutputPath(
+            output.to_owned(),
+        ));
+    }
+    Ok(())
+}
+
 fn normalize_story_status(value: &str) -> String {
     match normalize_token(value).as_str() {
         "planned" => "planned",
@@ -1513,6 +1539,59 @@ templates:
             fs::read_to_string(repo_root.join("docs/product/tasks.md")).unwrap(),
             "# Domain\n"
         );
+    }
+
+    #[test]
+    fn scaffold_rejects_output_paths_outside_repo() {
+        let temp_dir = tempfile::tempdir().unwrap();
+        let repo_root = temp_dir.path().join("repo");
+        fs::create_dir_all(repo_root.join("docs/harness/templates/product")).unwrap();
+        fs::write(
+            repo_root.join("docs/harness/templates/manifest.yml"),
+            r#"version: 1
+templates:
+  product_domain:
+    template: docs/harness/templates/product/domain.md
+    default_output_pattern: docs/product/{domain}.md
+    description: Product domain contract
+    requires_review: true
+"#,
+        )
+        .unwrap();
+        fs::write(
+            repo_root.join("docs/harness/templates/product/domain.md"),
+            "# Domain\n",
+        )
+        .unwrap();
+        let repository = SqliteHarnessRepository::new(
+            repo_root.clone(),
+            temp_dir.path().join("harness.db"),
+            repo_root.join("scripts/schema"),
+        );
+
+        let absolute = repository
+            .scaffold_template(
+                "product_domain",
+                Some(temp_dir.path().join("outside.md").display().to_string()),
+                false,
+            )
+            .unwrap_err();
+        let parent_dir = repository
+            .scaffold_template(
+                "product_domain",
+                Some("docs/../outside.md".to_owned()),
+                false,
+            )
+            .unwrap_err();
+
+        assert!(matches!(
+            absolute,
+            HarnessInfraError::InvalidTemplateOutputPath(_)
+        ));
+        assert!(matches!(
+            parent_dir,
+            HarnessInfraError::InvalidTemplateOutputPath(_)
+        ));
     }
 
     #[test]
