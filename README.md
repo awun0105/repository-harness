@@ -1,12 +1,13 @@
 # Project Harness
 
-Turn an existing software project into a shared source of truth for humans and
-coding agents.
+Turn a software project into one shared source of truth for humans and coding
+agents.
 
-Project Harness is a documentation and workflow layer for projects maintained
-with humans and coding agents such as Claude Code, Codex, Cursor, and similar
-tools. It gives the repository a durable map of current behavior, requirements,
-architecture, decisions, stories, and validation proof.
+Project Harness is a documentation, workflow, and lightweight CLI layer for
+projects maintained with humans and coding agents such as Claude Code, Codex,
+Cursor, and similar tools. It gives a repository a durable map of current
+behavior, requirements, architecture, decisions, stories, validation proof, and
+prior agent work.
 
 The key rule is simple:
 
@@ -16,6 +17,11 @@ One project truth, shared by humans and agents.
 
 `docs/harness/` contains the operating rules for agents. The rest of `docs/`
 contains project truth that humans and agents both use.
+
+Project Harness is not an application scaffold. It does not choose your tech
+stack, invent product domains, or generate accepted requirements without
+review. It gives humans and agents a disciplined way to turn real intent, code,
+tests, and existing docs into a project baseline that can be updated safely.
 
 ## The Problem
 
@@ -49,7 +55,7 @@ In this repo, those answers live in:
   doc links.
 - `docs/README.md` — the shared documentation map for humans and agents.
 - `docs/product/` — current product behavior and product vocabulary.
-- `docs/requirements/` — SRS, DFD, use cases, and requirement material.
+- `docs/requirements/` — SRDS and other requirement material.
 - `docs/architecture/` — technical architecture and system boundaries.
 - `docs/validation/` — proof matrix and validation reports.
 - `docs/harness/HARNESS.md` — the human-agent collaboration model.
@@ -67,6 +73,10 @@ The CLI can list and copy registered templates:
 scripts/bin/harness-cli template list
 scripts/bin/harness-cli scaffold source_inventory
 ```
+
+The registered SRDS template is intentionally the canonical combined
+requirements, design, and data-flow document. Do not split it into separate SRS,
+SDD, or DFD templates unless a project explicitly chooses split documentation.
 
 OpenAI describes this shift as an agent-first world where humans steer and
 agents execute:
@@ -97,6 +107,11 @@ After installing into an existing repo, run the onboarding workflow in:
 ```text
 docs/harness/ONBOARDING_EXISTING_PROJECT.md
 ```
+
+That workflow audits the real repo first. Existing docs and code are treated as
+evidence, not automatic truth. The expected first outputs are a source
+inventory, a doc sync plan, a baseline audit, conflicts/unknowns, and then
+normalized docs generated from cited evidence.
 
 Use the full project layout for a new repo or a repo you intentionally want to
 convert into the complete Project Harness source-of-truth structure:
@@ -187,6 +202,29 @@ Implementation prompts do not go straight to code. They first pass through
 feature intake, become story-sized work when needed, and then carry both product
 validation and harness maintenance expectations.
 
+For an existing project, the operational flow is:
+
+```text
+install harness-only
+  -> read onboarding workflow and template registry
+  -> inventory existing docs/code/tests/config
+  -> create doc sync plan
+  -> normalize only evidence-backed docs
+  -> import/query durable state with harness-cli
+  -> record traces and proof as work continues
+```
+
+For a new project, the flow is:
+
+```text
+human spec
+  -> feature intake
+  -> registered templates
+  -> draft product/SRDS/architecture/story docs
+  -> human review
+  -> implementation stories and validation proof
+```
+
 ## Current State
 
 This fork is becoming Project Harness.
@@ -202,6 +240,10 @@ codebases:
   templates live under categorized folders in `docs/harness/templates/`.
 - `docs/harness/TEMPLATE_REGISTRY.md` tells agents which template to use before
   creating, normalizing, or syncing docs.
+- `scripts/bin/harness-cli template list` and `scripts/bin/harness-cli scaffold`
+  expose registered templates mechanically.
+- The installer pulls this fork's published `harness-cli` release assets and
+  verifies checksums.
 
 ## Product Sources
 
@@ -211,7 +253,8 @@ When a user provides a project specification, add or reference it as the input
 spec for the first buildout, then derive smaller living artifacts from it:
 
 - `docs/product/`: current product contract files, created from the spec.
-- `docs/requirements/`: SRS, DFD, use cases, and non-functional requirements.
+- `docs/requirements/`: SRDS plus any additional requirement material selected
+  by the project.
 - `docs/architecture/`: technical structure and boundary docs.
 - `docs/stories/`: story packets and backlog created from selected work.
 - `docs/validation/test-matrix.md`: behavior-to-proof control panel.
@@ -242,10 +285,14 @@ project/
       FEATURE_INTAKE.md
       CONTEXT_RULES.md
       ONBOARDING_EXISTING_PROJECT.md
+      TEMPLATE_REGISTRY.md
       templates/
     demo/
   scripts/
     README.md
+    schema/
+  crates/
+    harness-cli/
 ```
 
 ## Contributing
