@@ -67,17 +67,6 @@ In this repo, those answers live in:
 - `docs/harness/TEMPLATE_REGISTRY.md` — the map from doc type to registered
   template and output path.
 
-The CLI can list and copy registered templates:
-
-```bash
-scripts/bin/harness-cli template list
-scripts/bin/harness-cli scaffold source_inventory
-```
-
-The registered SRDS template is intentionally the canonical combined
-requirements, design, and data-flow document. Do not split it into separate SRS,
-SDD, or DFD templates unless a project explicitly chooses split documentation.
-
 OpenAI describes this shift as an agent-first world where humans steer and
 agents execute:
 
@@ -202,19 +191,52 @@ Implementation prompts do not go straight to code. They first pass through
 feature intake, become story-sized work when needed, and then carry both product
 validation and harness maintenance expectations.
 
-For an existing project, the operational flow is:
+### Existing Project
+
+Use this when the repository already has code, tests, scripts, or old docs.
 
 ```text
-install harness-only
-  -> read onboarding workflow and template registry
-  -> inventory existing docs/code/tests/config
-  -> create doc sync plan
-  -> normalize only evidence-backed docs
-  -> import/query durable state with harness-cli
-  -> record traces and proof as work continues
+developer installs harness-only
+  -> developer prompts the coding agent to onboard the repo
+  -> agent reads AGENTS.md, onboarding workflow, and template registry
+  -> agent inventories existing docs/code/tests/config
+  -> agent creates source inventory, doc sync plan, and baseline audit
+  -> developer reviews conflicts and unknowns
+  -> agent updates baseline docs
+  -> agent imports/queries durable state with harness-cli
+  -> future work uses intake, stories, proof, decisions, and traces
 ```
 
-For a new project, the flow is:
+Prompt:
+
+```text
+Read AGENTS.md and follow the Harness existing-project onboarding workflow for this repository without implementing product behavior.
+```
+
+Review after onboarding:
+
+- `docs/onboarding/source-inventory.md`
+- `docs/onboarding/doc-sync-plan.md`
+- `docs/onboarding/baseline-audit.md`
+- `docs/onboarding/doc-conflicts.md`
+- `docs/product/current-state.md`
+- `docs/architecture/overview.md`
+- `docs/validation/test-matrix.md`
+- `docs/stories/backlog.md`
+
+Then ask the agent to update the baseline from your answers and run:
+
+```bash
+scripts/bin/harness-cli init
+scripts/bin/harness-cli import brownfield
+scripts/bin/harness-cli query matrix
+scripts/bin/harness-cli query backlog --open
+scripts/bin/harness-cli query stats
+```
+
+### New Project
+
+Use this when the repo starts from a human spec instead of existing code.
 
 ```text
 human spec
@@ -224,6 +246,50 @@ human spec
   -> human review
   -> implementation stories and validation proof
 ```
+
+Prompt:
+
+```text
+Read AGENTS.md and use Project Harness to turn this spec into reviewed product, SRDS, architecture, validation, and story docs before implementation.
+```
+
+### Normal Feature Work
+
+Use this after a project baseline already exists.
+
+```text
+developer asks for a change
+  -> agent classifies the request in FEATURE_INTAKE
+  -> agent chooses tiny, normal, or high-risk lane
+  -> agent reads the relevant source-of-truth docs
+  -> agent creates or updates a story when needed
+  -> agent implements the smallest useful vertical slice
+  -> agent runs proof checks
+  -> agent updates harness-cli story status and proof flags
+  -> agent records a trace
+```
+
+Prompt:
+
+```text
+Read AGENTS.md and handle this request through Harness intake, story, validation, implementation, proof update, and trace recording.
+```
+
+Useful CLI commands after onboarding:
+
+```bash
+scripts/bin/harness-cli query matrix
+scripts/bin/harness-cli query backlog --open
+scripts/bin/harness-cli query decisions
+scripts/bin/harness-cli query traces
+scripts/bin/harness-cli query stats
+scripts/bin/harness-cli template list
+scripts/bin/harness-cli scaffold product_domain --output docs/product/tasks.md
+```
+
+`harness-cli scaffold` only copies registered templates. It does not decide
+what is true. Agents and humans must fill scaffolded docs from specs, code,
+tests, existing docs, or explicit human confirmation.
 
 ## Current State
 
