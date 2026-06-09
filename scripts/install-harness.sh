@@ -530,7 +530,7 @@ read_cli_release_tag() {
 
 default_cli_base_url() {
   local release_tag="${HARNESS_CLI_RELEASE_TAG:-}"
-  local default_release_tag="harness-cli-v0.1.14-project-harness"
+  local default_release_tag="harness-cli-v0.1.15-project-harness"
 
   if [ -z "$release_tag" ]; then
     release_tag="$(read_cli_release_tag)"
@@ -865,11 +865,14 @@ AGENTS.md
 docs/harness/CONTEXT_RULES.md
 docs/harness/FEATURE_INTAKE.md
 docs/harness/HARNESS.md
+docs/harness/HARNESS_AUDIT.md
 docs/harness/HARNESS_BACKLOG.md
 docs/harness/HARNESS_COMPONENTS.md
 docs/harness/HARNESS_MATURITY.md
+docs/harness/IMPROVEMENT_PROTOCOL.md
 docs/harness/ONBOARDING_EXISTING_PROJECT.md
 docs/harness/TEMPLATE_REGISTRY.md
+docs/harness/TOOL_REGISTRY.md
 docs/harness/TRACE_SPEC.md
 docs/harness/templates/decisions/decision.md
 docs/harness/templates/manifest.yml
@@ -920,6 +923,8 @@ scripts/README.md
 scripts/schema/001-init.sql
 scripts/schema/002-story-verify.sql
 scripts/schema/003-onboarding-statuses.sql
+scripts/schema/004-tool-registry.sql
+scripts/schema/005-intervention.sql
 .gitignore
 EOF
 

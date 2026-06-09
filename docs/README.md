@@ -66,6 +66,12 @@ and write baseline docs before treating generated docs as truth. When existing
 docs are present, create `docs/onboarding/source-inventory.md` and
 `docs/onboarding/doc-sync-plan.md` before normalizing or replacing them.
 
+### Harness Operations
+
+- `docs/harness/TOOL_REGISTRY.md` documents compiled and registered CLI tools.
+- `docs/harness/HARNESS_AUDIT.md` documents drift checks and entropy scoring.
+- `docs/harness/IMPROVEMENT_PROTOCOL.md` documents proposal review and closure.
+
 ## Freshness Rule
 
 If code and docs disagree, do not silently choose one as true.

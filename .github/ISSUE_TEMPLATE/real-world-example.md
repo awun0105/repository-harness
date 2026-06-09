@@ -14,10 +14,10 @@ labels: example, needs-triage
 ## Which files mattered most?
 
 - [ ] `AGENTS.md`
-- [ ] `docs/HARNESS.md`
-- [ ] `docs/FEATURE_INTAKE.md`
-- [ ] `docs/TEST_MATRIX.md`
-- [ ] `docs/templates/`
+- [ ] `docs/harness/HARNESS.md`
+- [ ] `docs/harness/FEATURE_INTAKE.md`
+- [ ] `docs/validation/test-matrix.md`
+- [ ] `docs/harness/templates/`
 - [ ] Other:
 
 ## Which agent/tool did you use?
@@ -31,5 +31,4 @@ labels: example, needs-triage
 
 
 ## What should the harness improve?
-
 
