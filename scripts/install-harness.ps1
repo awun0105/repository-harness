@@ -431,6 +431,7 @@ $files = @(
     "docs/harness/templates/onboarding/doc-conflict.md",
     "docs/harness/templates/onboarding/doc-sync-plan.md",
     "docs/harness/templates/onboarding/source-inventory.md",
+    "docs/harness/templates/product/domain.md",
     "docs/harness/templates/readme/README_TEMPLATE.md",
     "docs/harness/templates/readme/README_VN_TEMPLATE.md",
     "docs/harness/templates/requirements/srds.md",

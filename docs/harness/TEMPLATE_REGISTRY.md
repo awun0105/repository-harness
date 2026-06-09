@@ -27,6 +27,7 @@ normalizing, or syncing Project Harness documentation.
 | Docs suite EN overview | `docs/harness/templates/docs-suite/EN/overview.md` | `docs/EN/overview.md` | Creating English overview docs | human |
 | Docs suite VN overview | `docs/harness/templates/docs-suite/VN/overview.md` | `docs/VN/overview.md` | Creating Vietnamese overview docs | human |
 | SRDS | `docs/harness/templates/requirements/srds.md` | `docs/requirements/SRDS.md` | Creating combined requirements and design docs | human |
+| Product domain | `docs/harness/templates/product/domain.md` | `docs/product/<domain>.md` | Creating an evidence-backed product domain contract | human |
 | Spec intake | `docs/harness/templates/intake/spec-intake.md` | `docs/stories/spec-intake.md` | Turning a supplied spec into candidate work | human |
 | Source inventory | `docs/harness/templates/onboarding/source-inventory.md` | `docs/onboarding/source-inventory.md` | Inventorying existing docs/code/tests/config before onboarding | human |
 | Doc sync plan | `docs/harness/templates/onboarding/doc-sync-plan.md` | `docs/onboarding/doc-sync-plan.md` | Planning how old docs map into canonical docs | human |
