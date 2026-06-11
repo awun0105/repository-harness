@@ -674,7 +674,7 @@ check_protected_target_paths() {
 override_protected_target_paths() {
   local protected
 
-  for protected in AGENTS.md docs scripts; do
+  for protected in AGENTS.md docs scripts harness.db harness.db-wal harness.db-shm; do
     [ -e "$TARGET_DIR/$protected" ] || continue
 
     if [ "$DRY_RUN" -eq 1 ]; then

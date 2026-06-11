@@ -326,7 +326,7 @@ if ($conflicts.Count -gt 0) {
         Write-Step "Continuing with merge. Existing files will be skipped."
     } elseif ($Override) {
         $script:ConflictAction = "override"
-        foreach ($protected in @("AGENTS.md", "docs", "scripts")) {
+        foreach ($protected in @("AGENTS.md", "docs", "scripts", "harness.db", "harness.db-wal", "harness.db-shm")) {
             $path = Join-Path $script:TargetDir $protected
             if (!(Test-Path $path)) { continue }
             if ($DryRun) {
