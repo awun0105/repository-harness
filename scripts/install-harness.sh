@@ -530,7 +530,7 @@ read_cli_release_tag() {
 
 default_cli_base_url() {
   local release_tag="${HARNESS_CLI_RELEASE_TAG:-}"
-  local default_release_tag="harness-cli-v0.1.15-project-harness"
+  local default_release_tag="harness-cli-v0.1.16-project-harness"
 
   if [ -z "$release_tag" ]; then
     release_tag="$(read_cli_release_tag)"
@@ -542,6 +542,18 @@ default_cli_base_url() {
   else
     printf 'https://github.com/awun0105/repository-harness/releases/latest/download\n'
   fi
+}
+
+init_harness_database() {
+  if [ "$DRY_RUN" -eq 1 ]; then
+    log "init     harness.db"
+    log "migrate  schema"
+    return 0
+  fi
+
+  (cd "$TARGET_DIR" && scripts/bin/harness-cli init >/dev/null)
+  (cd "$TARGET_DIR" && scripts/bin/harness-cli migrate >/dev/null)
+  log "init     harness.db (migrated to current schema)"
 }
 
 install_harness_cli_binary() {
@@ -557,12 +569,14 @@ install_harness_cli_binary() {
   if [ -e "$target" ] && [ "$CONFLICT_ACTION" = "merge" ] && [ "$FORCE" -eq 0 ]; then
     log "skip     scripts/bin/harness-cli (merge keeps existing file)"
     SKIPPED=$((SKIPPED + 1))
+    init_harness_database
     return 0
   fi
 
   if [ "$DRY_RUN" -eq 1 ]; then
     log "download $binary_name -> scripts/bin/harness-cli"
     log "verify   $binary_name.sha256"
+    init_harness_database
     CREATED=$((CREATED + 1))
     return 0
   fi
@@ -601,6 +615,7 @@ install_harness_cli_binary() {
   chmod 755 "$target"
   rm -rf "$tmp_dir"
   log "verified scripts/bin/harness-cli ($platform)"
+  init_harness_database
 }
 
 check_protected_target_paths() {

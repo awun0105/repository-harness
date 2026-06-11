@@ -219,6 +219,15 @@ pub fn compiled_tool_registry() -> Vec<ToolEntry> {
         ),
         tool(
             "harness-cli",
+            "bootstrap",
+            "bootstrap",
+            "Initialize, migrate, import brownfield markdown, and print stats.",
+            &[],
+            "Project memory",
+            "0.1.16",
+        ),
+        tool(
+            "harness-cli",
             "intake",
             "intake",
             "Record a feature intake classification.",

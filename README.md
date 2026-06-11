@@ -117,6 +117,9 @@ curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/h
 & ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout project -Yes
 ```
 
+The installer downloads `scripts/bin/harness-cli`, creates `harness.db`, and
+runs schema migrations automatically.
+
 ```text
 human spec
   -> feature intake
@@ -142,6 +145,14 @@ curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/h
 
 ```powershell
 & ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout harness-only -Merge -Yes
+```
+
+The installer downloads `scripts/bin/harness-cli`, creates `harness.db`, and
+runs schema migrations automatically. To import existing Harness markdown into
+the durable SQLite layer, run:
+
+```bash
+scripts/bin/harness-cli bootstrap
 ```
 
 ```text
@@ -181,7 +192,10 @@ Update the Harness baseline from my answers, then run the required harness-cli s
 
 #### 4. Reset Harness
 
-If you want a full backup of the previous Harness surface before reinstalling, use `--override`. (To fully reset the database, manually delete `harness.db` at the project root).
+If you want a full backup of the previous Harness surface before reinstalling,
+use `--override`. It backs up `AGENTS.md`, `docs/`, `scripts/`, and any existing
+`harness.db*` files before installing a fresh Harness surface and creating a new
+current-schema database.
 
 ```bash
 curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout harness-only --override --yes
@@ -223,7 +237,8 @@ Harness instructions. Use `--directory /path/to/project` or
 
 The installer downloads the prebuilt Harness CLI for the current platform,
 verifies its checksum, and installs it at `scripts/bin/harness-cli` on
-macOS/Linux or `scripts/bin/harness-cli.exe` on Windows.
+macOS/Linux or `scripts/bin/harness-cli.exe` on Windows. It then runs
+`harness-cli init` and `harness-cli migrate` so `harness.db` is ready for use.
 
 ### Useful CLI Commands
 

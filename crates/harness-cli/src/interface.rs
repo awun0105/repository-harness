@@ -63,6 +63,8 @@ enum Command {
     Propose(ProposeArgs),
     /// Query harness data.
     Query(QueryArgs),
+    /// Run init, migrate, import brownfield, and print stats in one step.
+    Bootstrap,
 }
 
 #[derive(Args, Debug)]
@@ -633,6 +635,20 @@ pub fn run(cli: Cli) -> Result<(), InterfaceError> {
         }
         Command::Audit => print_audit(&service.audit()?),
         Command::Propose(args) => print_proposals(&service.propose(args.commit)?),
+        Command::Bootstrap => {
+            print_init_result(service.init()?);
+            print_migrate_result(service.migrate()?);
+            match service.import_brownfield() {
+                Ok(result) => print_brownfield_import_result(result),
+                Err(crate::infrastructure::HarnessInfraError::MissingBrownfieldPath(path)) => {
+                    println!("import: skipped ({path} not found)");
+                }
+                Err(other) => return Err(other.into()),
+            }
+            print_stats(&service.query_stats()?);
+            println!();
+            println!("Bootstrap complete. Run: scripts/bin/harness-cli query matrix");
+        }
         Command::Query(args) => match args.view {
             QueryView::Matrix(args) => print_matrix(&service.query_matrix()?, args.numeric),
             QueryView::Backlog(args) => {

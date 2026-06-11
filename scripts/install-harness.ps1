@@ -216,7 +216,7 @@ function Read-CliReleaseTag {
 
 function Get-DefaultCliBaseUrl {
     $tag = $env:HARNESS_CLI_RELEASE_TAG
-    $defaultTag = "harness-cli-v0.1.15-project-harness"
+    $defaultTag = "harness-cli-v0.1.16-project-harness"
     if ([string]::IsNullOrWhiteSpace($tag)) {
         $tag = Read-CliReleaseTag
     }
@@ -227,6 +227,25 @@ function Get-DefaultCliBaseUrl {
         return "https://github.com/awun0105/repository-harness/releases/download/$tag"
     }
     return "https://github.com/awun0105/repository-harness/releases/latest/download"
+}
+
+function Init-HarnessDatabase {
+    if ($DryRun) {
+        Write-Step "init     harness.db"
+        Write-Step "migrate  schema"
+        return
+    }
+    $cli = Join-Path $script:TargetDir "scripts/bin/harness-cli.exe"
+    Push-Location $script:TargetDir
+    try {
+        if (Test-Path $cli) {
+            & $cli init | Out-Null
+            & $cli migrate | Out-Null
+            Write-Step "init     harness.db (migrated to current schema)"
+        }
+    } finally {
+        Pop-Location
+    }
 }
 
 function Install-HarnessCliBinary {
@@ -243,6 +262,7 @@ function Install-HarnessCliBinary {
     if ((Test-Path $target) -and $script:ConflictAction -eq "merge" -and !$Force) {
         Write-Step "skip     scripts/bin/harness-cli.exe (merge keeps existing file)"
         $script:Skipped++
+        Init-HarnessDatabase
         return
     }
 
@@ -250,6 +270,7 @@ function Install-HarnessCliBinary {
         Write-Step "download $binaryName -> scripts/bin/harness-cli.exe"
         Write-Step "verify   $binaryName.sha256"
         $script:Created++
+        Init-HarnessDatabase
         return
     }
 
@@ -285,6 +306,7 @@ function Install-HarnessCliBinary {
         }
         Copy-Item -LiteralPath $binaryTmp -Destination $target -Force
         Write-Step "verified scripts/bin/harness-cli.exe ($platform)"
+        Init-HarnessDatabase
     } finally {
         Remove-Item -LiteralPath $tmpDir -Recurse -Force -ErrorAction SilentlyContinue
     }

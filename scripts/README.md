@@ -10,6 +10,7 @@ projects use the prebuilt binary at `scripts/bin/harness-cli` on macOS/Linux or
 
 ```bash
 scripts/bin/harness-cli init          # Create the database
+scripts/bin/harness-cli bootstrap     # Initialize, migrate, import brownfield markdown, and print stats
 scripts/bin/harness-cli intake ...    # Record a feature intake classification
 scripts/bin/harness-cli story ...     # Add or update a story (test matrix row)
 scripts/bin/harness-cli story update --id US-001 --unit 1 --integration 1 --e2e 0 --platform 0
@@ -59,6 +60,7 @@ Current migrated commands:
 
 ```bash
 scripts/bin/harness-cli init
+scripts/bin/harness-cli bootstrap
 scripts/bin/harness-cli migrate
 scripts/bin/harness-cli import brownfield
 scripts/bin/harness-cli template list
@@ -98,6 +100,10 @@ from existing Harness v0 markdown in `docs/validation/test-matrix.md`,
 `docs/decisions/`, and `docs/harness/HARNESS_BACKLOG.md`. This keeps already-installed
 Harness repos on the Rust CLI path without losing their populated operating
 docs.
+
+`scripts/bin/harness-cli bootstrap` is the recommended post-install helper for
+existing repositories. It runs `init`, `migrate`, `import brownfield`, and then
+prints `query stats` so the durable layer is ready immediately after installation.
 
 `scripts/bin/harness-cli template list` reads
 `docs/harness/templates/manifest.yml` and shows the registered documentation
@@ -179,7 +185,8 @@ payload.
 
 By default the installer also downloads the prebuilt Rust Harness CLI for the
 current platform into `scripts/bin/harness-cli` on macOS/Linux or
-`scripts/bin/harness-cli.exe` on Windows, then verifies its `.sha256` checksum.
+`scripts/bin/harness-cli.exe` on Windows, verifies its `.sha256` checksum, and
+automatically runs `harness-cli init` and `harness-cli migrate` to prepare `harness.db`.
 A source branch can pin the release used by the installer through
 `scripts/harness-cli-release-tag`; this fork currently pins the published
 Project Harness CLI release for branch installs. Set `HARNESS_CLI_RELEASE_TAG`
