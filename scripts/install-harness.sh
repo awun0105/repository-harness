@@ -121,10 +121,7 @@ copy_file() {
       return
     fi
 
-    if [ "$CONFLICT_ACTION" = "merge" ]; then
-      log "skip     $relative (merge keeps existing file)"
-      SKIPPED=$((SKIPPED + 1))
-    elif [ "$FORCE" -eq 1 ]; then
+    if [ "$FORCE" -eq 1 ]; then
       if [ "$DRY_RUN" -eq 1 ]; then
         log "overwrite $relative (backup first)"
       else
@@ -135,6 +132,9 @@ copy_file() {
         log "updated $relative (backup: ${backup#$TARGET_DIR/})"
       fi
       UPDATED=$((UPDATED + 1))
+    elif [ "$CONFLICT_ACTION" = "merge" ]; then
+      log "skip     $relative (merge keeps existing file)"
+      SKIPPED=$((SKIPPED + 1))
     else
       log "skip     $relative (already exists)"
       SKIPPED=$((SKIPPED + 1))

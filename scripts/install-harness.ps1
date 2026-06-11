@@ -101,10 +101,7 @@ function Copy-HarnessFile([string]$Relative) {
     }
 
     if (Test-Path $target) {
-        if ($script:ConflictAction -eq "merge") {
-            Write-Step "skip     $Relative (merge keeps existing file)"
-            $script:Skipped++
-        } elseif ($Force) {
+        if ($Force) {
             if ($DryRun) {
                 Write-Step "overwrite $Relative (backup first)"
             } else {
@@ -115,6 +112,9 @@ function Copy-HarnessFile([string]$Relative) {
                 Write-Step "updated  $Relative (backup: $($backup.Substring($script:TargetDir.Length + 1)))"
             }
             $script:Updated++
+        } elseif ($script:ConflictAction -eq "merge") {
+            Write-Step "skip     $Relative (merge keeps existing file)"
+            $script:Skipped++
         } else {
             Write-Step "skip     $Relative (already exists)"
             $script:Skipped++
