@@ -99,7 +99,19 @@ validation and harness maintenance expectations.
 Use this when the repository already has code, tests, scripts, or old docs.
 Most existing projects should start with `harness-only`, which installs the
 Harness process layer without creating fake product truth before the codebase is
-audited.
+audited. Use `--merge` to keep existing files safe, or `--override` to back up
+and replace the entire Harness surface.
+
+#### Installation Decider
+
+| Goal | Option | Action / Behavior |
+| --- | --- | --- |
+| Safe install (skip existing files) | `--merge --yes` | Preserves existing files, installs missing Harness templates. |
+| Clean start (backup entire Harness docs) | `--override --yes` | Moves existing `docs/`, `scripts/`, and `AGENTS.md` to `.harness-backup/` first. |
+| Overwrite individual manifest files | `--merge --force --yes` | Overwrites conflicting manifest files after backing them up individually. |
+| Safe preview | `--dry-run` | Shows proposed changes without writing any files. |
+
+*Warning: Do not use `--force` if you want a complete backup of the previous `docs/` folder. Use `--override` instead.*
 
 ```bash
 curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout harness-only --merge --yes
@@ -107,18 +119,6 @@ curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/h
 
 ```powershell
 & ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout harness-only -Merge -Yes
-```
-
-If the target already has an older Harness install and you want a full backup of
-the previous Harness surface before installing the `harness-only` layout, use
-`--override` instead of `--merge`:
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout harness-only --override --yes
-```
-
-```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout harness-only -Override -Yes
 ```
 
 ```text
@@ -210,11 +210,7 @@ Read AGENTS.md and handle this request through Harness intake, story, validation
 ### Installer Options
 
 Use `--dry-run` on Bash or `-DryRun` on PowerShell to preview changes before
-writing files. Use `--merge` for repos with existing docs when existing files
-should stay untouched and only missing Harness files should be created. Use
-`--override` when replacing `AGENTS.md`, `docs/`, and `scripts/` is intentional;
-it moves those paths into `.harness-backup/<timestamp>/` first. Use `--force`
-only for file-level overwrites and backups of manifest files. Add `--claude`
+writing files. Add `--claude`
 when the project is driven by Claude Code so `CLAUDE.md` imports the
 Harness instructions. Use `--directory /path/to/project` or
 `-Directory C:\path\to\project` to install into another path.
