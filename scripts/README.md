@@ -119,8 +119,9 @@ Non-interactive installs stop on those protected paths unless `--merge` or
 that already have Harness: it keeps existing files in place and creates only
 missing Harness files. Add `--refresh-agent-shim` when an older install has the
 full generated Harness guide in `AGENTS.md` and should move to the small stable
-shim. Use `--override` only when replacing the protected Harness surface is
-intentional.
+shim. Use `--override` to back up and replace the entire `AGENTS.md`, `docs/`, and
+`scripts/` surface into a timestamped backup directory. Use `--force` to perform
+file-level backups and overwrites for specific manifest files.
 
 Choose an installation layout:
 
