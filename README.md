@@ -94,24 +94,47 @@ Implementation prompts do not go straight to code. They first pass through
 feature intake, become story-sized work when needed, and then carry both product
 validation and harness maintenance expectations.
 
-### Existing Project
+### Installation Decider
 
-Use this when the repository already has code, tests, scripts, or old docs.
-Most existing projects should start with `harness-only`, which installs the
-Harness process layer without creating fake product truth before the codebase is
-audited. Use `--merge` to keep existing files safe, or `--override` to back up
-and replace the entire Harness surface.
-
-#### Installation Decider
-
-| Goal | Option | Action / Behavior |
-| --- | --- | --- |
-| Safe install (skip existing files) | `--merge --yes` | Preserves existing files, installs missing Harness templates. |
-| Clean start (backup entire Harness docs) | `--override --yes` | Moves existing `docs/`, `scripts/`, and `AGENTS.md` to `.harness-backup/` first. |
-| Overwrite individual manifest files | `--merge --force --yes` | Overwrites conflicting manifest files after backing them up individually. |
-| Safe preview | `--dry-run` | Shows proposed changes without writing any files. |
+| Goal | Recommended Layout | Options | Action / Behavior |
+| --- | --- | --- | --- |
+| **1. New Project** <br> Start fresh from an idea or `SPEC.md` | `project` | `--yes` | Creates the full `docs/` structure (product, architecture, stories) ready for agent spec-intake. |
+| **2. Existing Project (No Harness)** <br> Add Harness without altering current docs | `harness-only` | `--merge --yes` | Safely installs Harness files. Skips any existing files so your current docs are untouched. |
+| **3. Existing Harness (Update)** <br> Update Harness tools & templates | `harness-only` | `--merge --yes` | Safely adds new missing files. To overwrite specific updated templates, append `--force`. |
+| **4. Existing Harness (Reset)** <br> Complete backup & clean re-install | `harness-only` | `--override --yes` | Moves entire existing `docs/`, `scripts/`, and `AGENTS.md` to `.harness-backup/` first, then installs cleanly. |
 
 *Warning: Do not use `--force` if you want a complete backup of the previous `docs/` folder. Use `--override` instead.*
+
+#### 1. New Project
+
+Use this when the repo starts from a human spec instead of existing code.
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout project --yes
+```
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout project -Yes
+```
+
+```text
+human spec
+  -> feature intake
+  -> registered templates
+  -> draft product/SRDS/architecture/story docs
+  -> human review
+  -> implementation stories and validation proof
+```
+
+Prompt:
+
+```text
+Read AGENTS.md and use Project Harness to turn this spec into reviewed product, SRDS, architecture, validation, and story docs before implementation.
+```
+
+#### 2 & 3. Existing Project
+
+Use this to safely add or update Harness. It installs only the process layer so the agent can audit the repo before writing "product truth".
 
 ```bash
 curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout harness-only --merge --yes
@@ -150,39 +173,22 @@ Review after onboarding:
 - `docs/validation/test-matrix.md`
 - `docs/stories/backlog.md`
 
-Then ask the agent to update the baseline and run the required Harness CLI
-sync/query steps:
+Then ask the agent to update the baseline and run the required Harness CLI sync/query steps:
 
 ```text
 Update the Harness baseline from my answers, then run the required harness-cli sync and query steps and summarize the current matrix, open backlog, and stats.
 ```
 
-### New Project
+#### 4. Reset Harness
 
-Use this when the repo starts from a human spec instead of existing code. The
-full `project` layout creates the complete source-of-truth structure up front.
+If you want a full backup of the previous Harness surface before reinstalling, use `--override`. (To fully reset the database, manually delete `harness.db` at the project root).
 
 ```bash
-curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout project --yes
+curl -fsSL "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.sh?$(date +%s)" | bash -s -- --layout harness-only --override --yes
 ```
 
 ```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout project -Yes
-```
-
-```text
-human spec
-  -> feature intake
-  -> registered templates
-  -> draft product/SRDS/architecture/story docs
-  -> human review
-  -> implementation stories and validation proof
-```
-
-Prompt:
-
-```text
-Read AGENTS.md and use Project Harness to turn this spec into reviewed product, SRDS, architecture, validation, and story docs before implementation.
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/awun0105/repository-harness/refs/heads/custom/project-harness/scripts/install-harness.ps1"))) -Layout harness-only -Override -Yes
 ```
 
 ### Normal Feature Work
